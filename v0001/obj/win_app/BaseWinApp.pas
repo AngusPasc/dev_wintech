@@ -4,6 +4,7 @@ interface
 
 uses
   Windows,
+  win.app,
   BaseApp;
   
 type        
@@ -15,10 +16,8 @@ type
   
   PBaseWinAppData = ^TBaseWinAppData;
   TBaseWinAppData = record
-    AppCmdWnd     : Windows.HWND;
-    AppMsg        : Windows.TMsg;
+    WinAppRecord  : TWinAppRecord;
     AppPath       : TBaseWinAppPath;
-    AppMutexHandle: THandle;
   end;
 
   TBaseWinApp = class(TBaseApp)
@@ -33,7 +32,7 @@ type
     function CheckSingleInstance(AppMutexName: AnsiString): Boolean;
     procedure Terminate; override;
     property BaseWinAppData: PBaseWinAppData read GetBaseWinAppData;
-    property AppWindow: HWND read fBaseWinAppData.AppCmdWnd write fBaseWinAppData.AppCmdWnd;
+    property AppWindow: HWND read fBaseWinAppData.WinAppRecord.AppCmdWnd write fBaseWinAppData.WinAppRecord.AppCmdWnd;
   end;
 
   TBaseWinAppAgent = class(TBaseAppAgent)
@@ -70,12 +69,12 @@ begin
   if IsActiveStatus_Active = Self.IsActiveStatus then
   begin
     Self.IsActiveStatus := IsActiveStatus_RequestShutdown;
-    if IsWIndow(fBaseWinAppData.AppCmdWnd) then
+    if IsWIndow(fBaseWinAppData.WinAppRecord.AppCmdWnd) then
     begin
-      PostMessage(fBaseWinAppData.AppCmdWnd, WM_AppRequestEnd, 0, 0);
+      PostMessage(fBaseWinAppData.WinAppRecord.AppCmdWnd, WM_AppRequestEnd, 0, 0);
     end;
     Self.Finalize;       
-      PostMessage(fBaseWinAppData.AppCmdWnd, WM_Quit, 0, 0);
+      PostMessage(fBaseWinAppData.WinAppRecord.AppCmdWnd, WM_Quit, 0, 0);
     PostQuitMessage(0);
   end;
 end;
@@ -87,10 +86,10 @@ end;
 
 procedure TBaseWinApp.RunAppMsgLoop;
 begin
-  while Windows.GetMessage(fBaseWinAppData.AppMsg, 0, 0, 0) do
+  while Windows.GetMessage(fBaseWinAppData.WinAppRecord.AppMsg, 0, 0, 0) do
   begin
-    TranslateMessage(fBaseWinAppData.AppMsg);
-    DispatchMessage(fBaseWinAppData.AppMsg);
+    TranslateMessage(fBaseWinAppData.WinAppRecord.AppMsg);
+    DispatchMessage(fBaseWinAppData.WinAppRecord.AppMsg);
   end;
 end;
 
@@ -98,7 +97,7 @@ function TBaseWinApp.CheckSingleInstance(AppMutexName: AnsiString): Boolean;
 begin                                           
   if AppMutexName = '' then
     AppMutexName := ExtractFileName(ParamStr(0));
-  fBaseWinAppData.AppMutexHandle := CreateMutexA(nil, False, PAnsiChar(AppMutexName));
+  fBaseWinAppData.WinAppRecord.AppMutexHandle := CreateMutexA(nil, False, PAnsiChar(AppMutexName));
   Result := GetLastError <> ERROR_ALREADY_EXISTS;
 end;
 

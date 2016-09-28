@@ -6,15 +6,15 @@ uses
   Windows, Messages;
   
 type
-  PWinApp         = ^TWinApp;
-  TWinApp         = record
+  PWinAppRecord   = ^TWinAppRecord;
+  TWinAppRecord   = record
     AppCmdWnd     : Windows.HWND;
     AppMsg        : Windows.TMsg;  
     AppMutexHandle: THandle;
     IsTerminated  : Boolean;
   end;
                        
-  function ProcessMessage(App: PWinApp): Boolean;
+  function ProcessMessage(App: PWinAppRecord): Boolean;
 
 implementation
 
@@ -66,7 +66,7 @@ begin
   //*)
 end;
 
-function ProcessMessage(App: PWinApp): Boolean;
+function ProcessMessage(App: PWinAppRecord): Boolean;
 var
   tmpIsUnicodeWnd: Boolean;
   tmpIsMsgExists: Boolean;
