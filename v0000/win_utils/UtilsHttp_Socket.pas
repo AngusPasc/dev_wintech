@@ -273,6 +273,31 @@ begin
   end;
 end;
 
+function HexToInt(AString: string): Integer;
+var
+  i: integer;
+begin
+  Result := 0;
+  AString := UpperCase(AString);
+  for i := 1 to length(AString)   do   
+  begin
+    if (AString[i] >= '0') and (AString[i] <= '9') then
+    begin
+      Result := Result * 16 + StrToInt(AString[i]);
+    end else   
+    begin   
+      if (AString[i] >= 'A')   and (AString[i] <= 'F') then
+      begin
+        result := Result * 16   + ord(AString[i]) - 55;
+      end else
+      begin
+        result := 0;
+        exit;
+      end;
+    end;   
+  end;   
+end;
+
 function Http_GetString(AURL: AnsiString; AHttpClientSession: PHttpClientSession; ABuffer: PIOBuffer; ABufferSizeMode: Integer = SizeMode_16k): PIOBuffer;
 var
   tmpHttpInfo: THttpUrlInfo;
@@ -282,9 +307,13 @@ var
   tmpRet: Integer;        
   tmpBuffer: PIOBuffer;
   tmpString: AnsiString;
-  tmpStrs: TStringList;
+  tmpStrs: TStringList;   
+  tmpStrArrayBuffer: array[0..256 - 1] of AnsiChar; 
   i: integer;
   tmpPos: integer;
+  tmpLength: integer;
+  tmpBufferMoveBeginPos: integer;
+  tmpIsLengthBeginPos: integer;
 begin
   Result := nil;
   FillChar(tmpHttpInfo, SizeOf(tmpHttpInfo), 0);
@@ -374,7 +403,7 @@ begin
                 if SameText('close', tmpString) then
                 begin
                   TcpClientDisconnect(tmpTcpClient);
-                  exit;
+                  Break;
                 end;
               end;
             end;
@@ -383,6 +412,66 @@ begin
             tmpStrs.Free;
           end;
           tmpString := '';
+          // HTTP 协议中的 Transfer-Encoding
+          // Transfer-Encoding 传输编码
+          //     分块编码（chunked）
+          //     报文中的实体需要改为用一系列分块来传输。每个分块包含十六进制的长度值和数据，长度值独占一行
+          // Content-Encoding 通常用于对实体内容进行压缩编码，目的是优化传输
+
+          if 1 = AHttpClientSession.HttpHeadSession.Transfer_Encoding then
+          begin
+            FillChar(tmpStrArrayBuffer, SizeOf(tmpStrArrayBuffer), 0);
+            tmpPos := AHttpClientSession.HttpHeadSession.HeadEndPos + 1;
+            tmpIsLengthBeginPos := tmpPos;
+            tmpBufferMoveBeginPos := tmpPos;
+            while tmpPos < Result.BufferHead.TotalLength do
+            begin
+              if #13 = PIOBufferX(Result).Data[tmpPos] then
+              begin
+                CopyMemory(@tmpStrArrayBuffer[0], @PIOBufferX(Result).Data[tmpIsLengthBeginPos], tmpPos - tmpIsLengthBeginPos);
+                tmpString := Trim(tmpStrArrayBuffer);
+                tmpLength := 0;
+                if '' <> tmpString then
+                begin
+                  tmpLength := HexToInt(tmpString);
+                end;
+                FillChar(tmpStrArrayBuffer, SizeOf(tmpStrArrayBuffer), 0);
+                if 0 = tmpLength then
+                begin
+                  for i := tmpBufferMoveBeginPos to Result.BufferHead.TotalLength - 1 do
+                  begin
+                    PIOBufferX(Result).Data[i] := #0;
+                  end;
+                  tmpPos := Result.BufferHead.TotalLength;
+                  Break;
+                end else
+                begin
+                  if #10 = PIOBufferX(Result).Data[tmpPos + 1] then
+                  begin
+                    tmpPos := tmpPos + 1;
+                  end;
+                  tmpPos := tmpPos + 1;
+                  CopyMemory(@PIOBufferX(Result).Data[tmpBufferMoveBeginPos],
+                    @PIOBufferX(Result).Data[tmpPos], tmpLength);
+                  tmpBufferMoveBeginPos := tmpBufferMoveBeginPos + tmpLength;
+                  tmpPos := tmpPos + tmpLength;
+                  if tmpPos >= Result.BufferHead.TotalLength then
+                  begin
+
+                  end;
+                  if #13 = PIOBufferX(Result).Data[tmpPos] then
+                    tmpPos := tmpPos + 1;
+                  if #10 = PIOBufferX(Result).Data[tmpPos] then
+                    tmpPos := tmpPos + 1;
+                  tmpIsLengthBeginPos := tmpPos; 
+                end;
+              end else
+              begin       
+                Inc(tmpPos);
+              end;
+              Sleep(1);
+            end;
+          end;
         end;
       end;
     end;
