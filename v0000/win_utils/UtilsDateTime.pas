@@ -49,7 +49,8 @@ var
   tmpFormat: TFormatSettings;
 begin
   // 2014/06/12-10:30
-  i := 0;       
+  i := 0;                  
+  FillChar(tmpFormat, SizeOf(tmpFormat), 0);
   if 0 < Pos(':', ADateTimeString) then
   begin
     tmpFormat.TimeSeparator := ':';
@@ -57,7 +58,6 @@ begin
     if 0 >= i then
       i := Pos(#32, ADateTimeString);
   end;
-  FillChar(tmpFormat, SizeOf(tmpFormat), 0);
   if 0 < i then
   begin
     tmpStrDate := Copy(ADateTimeString, 1, i - 1);
