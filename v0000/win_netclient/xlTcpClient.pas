@@ -174,8 +174,20 @@ begin
    // TmpStr := IntToStr(ErrCode);
    // MessageBox(0,'aaaaaaaaaaaaaaaaaaa',PChar(TmpStr),0);
   end;
-  Winsock2.CloseSocket(ATcpClient.Base.ConnectSocketHandle);
-  ATcpClient.Base.ConnectSocketHandle := Winsock2.INVALID_SOCKET;
+  //closesocket()的语义受SO_LINGER与SO_DONTLINGER选项影响，对比如下：
+  //选项          间隔   关闭方式  等待关闭与否
+  //SO_DONTLINGER 不关心 优雅      否
+  //SO_LINGER     零     强制      否
+  //SO_LINGER     非零   优雅      是
+
+  //如无错误发生，则closesocket()返回0
+  if 0 = Winsock2.CloseSocket(ATcpClient.Base.ConnectSocketHandle) then
+  begin
+    ATcpClient.Base.ConnectSocketHandle := Winsock2.INVALID_SOCKET;
+  end else
+  begin
+    // 返回SOCKET_ERROR错误，应用程序可通过WSAGetLastError()获取
+  end;
 //  FConnected := FALSE;
 //  FInputStream.Position := 0;
 //  FInputStream.ReadEndPosition := 0;

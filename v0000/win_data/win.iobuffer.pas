@@ -220,7 +220,12 @@ begin
   end;
   AIOBuffer.BufferHead.FirstExNode := nil;
   AIOBuffer.BufferHead.LastExNode := nil;
+  AIOBuffer.BufferHead.ExNodeCount := 0;
   FillChar(PIOBufferX(AIOBuffer).Data, AIOBuffer.BufferHead.Size, 0);
+
+  AIOBuffer.BufferHead.TotalLength := 0;
+  AIOBuffer.BufferHead.BufDataLength := 0;
+//    DataPointer   : Pointer;
 end;
 
 function GetSizeMode(ASize: Integer): Integer;
