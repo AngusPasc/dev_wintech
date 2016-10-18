@@ -211,6 +211,8 @@ var
   tmpExNode: PIOBufferExNode;    
   tmpNextExNode: PIOBufferExNode;
 begin
+  if nil = AIOBuffer then
+    exit;
   tmpExNode := AIOBuffer.BufferHead.FirstExNode;
   while nil <> tmpExNode do
   begin

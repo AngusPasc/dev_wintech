@@ -3,7 +3,8 @@ unit win.process;
 interface
 
 uses
-  Windows;
+  Windows,
+  win.wnd_cmd;
                
 type
   POwnedProcess   = ^TRT_OwnedProcess;
@@ -22,7 +23,7 @@ type
   { 自身运行进程控制 }
   TRT_OwnedProcess  = record
     Core            : TCoreProcess;
-    HostCmdWnd      : HWND;
+    HostCmdWnd      : TWndCmd;
     Run             : PRunProcess;
   end;
 
