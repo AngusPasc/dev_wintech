@@ -10,18 +10,24 @@ const
   WM_CommonAppBase  = WM_USER + $100;
   WM_AppStart       = WM_CommonAppBase + 1;
 
-  WM_AppRequestEnd  = WM_CommonAppBase + 21;
-  WM_AppNotifyEnd   = WM_CommonAppBase + 22;
-  
-  WM_AppNotifyShutdownMachine = WM_CommonAppBase + 26;
-  WM_AppNotifyRestartMachine  = WM_CommonAppBase + 27;
+  WM_AppRequestEnd  = WM_CommonAppBase + 11;
+  WM_AppNotifyEnd   = WM_CommonAppBase + 12;
+
+  WM_AppNotifyShutdownMachine = WM_CommonAppBase + 16;
+  WM_AppNotifyRestartMachine  = WM_CommonAppBase + 17;
+
+  // Client --> Server Host                                   
+  WM_RequestHostCommandWnd    = WM_CommonAppBase + 21;
+  WM_RegisterClientCommandWnd = WM_CommonAppBase + 22;
+  // Server Host --> Client
+  WM_NotifyHostCommandWnd     = WM_CommonAppBase + 23;
 
   // ½ø³Ì¼à¿Ø
   WM_ProcMonitorBase  = WM_USER + $300;    
   WM_ProcMonitor_S2C_Notify = WM_ProcMonitorBase + 1;  
   WM_ProcMonitor_C2S_Notify = WM_ProcMonitorBase + 2;                                 
 
-  WM_CustomAppBase    = WM_USER + $500;
+  WM_CustomAppBase    = WM_USER + $400;
 
 { VCL control message IDs }
 const

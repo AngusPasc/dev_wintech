@@ -22,12 +22,14 @@ type
   { 自身运行进程控制 }
   TRT_OwnedProcess  = record
     Core            : TCoreProcess;
+    HostCmdWnd      : HWND;
     Run             : PRunProcess;
   end;
 
   { 外部进程控制 }
   TRT_ExProcess     = record
     Core            : TCoreProcess;
+    HostCmdWnd      : HWND;
   end;
 
   TRT_RunProcess    = record
