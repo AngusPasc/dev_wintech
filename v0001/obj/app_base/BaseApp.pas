@@ -97,13 +97,15 @@ begin
     if GlobalBaseApp.Initialize then
     begin
       GlobalBaseApp.Run;
-    end;
+    end;                  
+    GlobalBaseApp.IsActiveStatus := IsActiveStatus_RequestShutdown;
     GlobalBaseApp.Finalize;
-  finally
+  finally                
+    GlobalBaseApp.IsActiveStatus := IsActiveStatus_Shutdown;
     GlobalBaseApp.Free;
   end;
 end;
-  
+              
 { TBaseApp }
                          
 constructor TBaseApp.Create(AppClassId: AnsiString);

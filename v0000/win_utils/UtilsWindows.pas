@@ -127,9 +127,10 @@ var
   tmpSleep: integer;
 begin
   Windows.keybd_event(AKeyCode, MapVirtualKey(AKeyCode, 0), 0, 0) ;//#a¼üÎ»ÂëÊÇ86
+  SleepWait(10);  
   Windows.keybd_event(AKeyCode, MapVirtualKey(AKeyCode, 0), KEYEVENTF_KEYUP, 0);
   tmpSleep := ASleep;
-  while 0 < tmpSleep do
+  while 1 <= tmpSleep do
   begin
     SleepWait(10);
     //Application.ProcessMessages;
