@@ -17,8 +17,8 @@ type
     function GetFileRelativePath(ADBType, ADataType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString; virtual;
     function GetFilePath(ADBType, ADataType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString; virtual;
 
-    function GetFileName(ADBType, ADataType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString; virtual;
-    function GetFileExt(ADBType, ADataType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString; virtual;
+    function GetFileName(ADataType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString; virtual;
+    function GetFileExt(ADataType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString; virtual;
     
     function GetFileUrl(ADBType, ADataType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString; overload; virtual;
     function GetFileUrl(ADBType, ADataType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString; overload; virtual;
@@ -61,12 +61,12 @@ begin
   Result := '';
 end;
 
-function TBasePath.GetFileName(ADBType, ADataType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString; 
+function TBasePath.GetFileName(ADataType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString; 
 begin
   Result := '';
 end;
 
-function TBasePath.GetFileExt(ADBType, ADataType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString;
+function TBasePath.GetFileExt(ADataType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString;
 begin
   Result := '';
 end;
