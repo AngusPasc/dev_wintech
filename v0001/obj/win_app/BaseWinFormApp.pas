@@ -36,14 +36,16 @@ procedure SimpleRunWinFormApp(AFormClass: TBaseFormClass; AppClass: TWinFormAppC
 var
   tmpForm: TfrmBase;
 begin
+  if nil = AFormClass then
+    exit;
   if nil = GlobalBaseWinFormApp then
   begin
     if nil = AppClass then
     begin
-      GlobalBaseWinFormApp := TBaseWinFormApp.Create('');
+      GlobalBaseWinFormApp := TBaseWinFormApp.Create(AFormClass.ClassName);
     end else
     begin
-      GlobalBaseWinFormApp := AppClass.Create('');
+      GlobalBaseWinFormApp := AppClass.Create(AppClass.ClassName);
     end;
     try
       if GlobalBaseWinFormApp.Initialize then

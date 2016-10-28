@@ -16,6 +16,15 @@ type
     ThreadProc        : TThreadProc;
     ExitCode          : Integer;
   end;
+
+  PUIWinThread        = ^TUIWinThread;        
+  TUIWinThread        = record       
+    BaseThread        : TUIThread;        
+    OleInitStatus     : Integer; // CoInitialize(nil);
+    ThreadProc        : TThreadProc;
+    ExitCode          : Integer;
+  end;
+  
 (*//
   Sleep(0)：时间片只能让给优先级相同或更高的线程； 
   SwitchToThread()：只要有可调度线程，即便优先级较低，也会让其调度
