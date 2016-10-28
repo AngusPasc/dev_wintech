@@ -5,43 +5,43 @@ interface
 type
   TBasePath = class
   protected
-    function GetDataBasePath(ADBType: integer; ADataSrc: integer): WideString; virtual;
+    function GetDataBasePath(ADBType, ADataType: integer; ADataSrc: integer): WideString; virtual;
     function GetInstallPath: WideString; virtual;
-    procedure SetDataBasePath(ADBType: integer; ADataSrc: integer; const Value: WideString); virtual;
+    procedure SetDataBasePath(ADBType, ADataType: integer; ADataSrc: integer; const Value: WideString); virtual;
     procedure SetInstallPath(const Value: WideString); virtual;
   public
     function IsFileExists(AFileUrl: WideString): Boolean; virtual;
     function IsPathExists(APathUrl: WideString): Boolean; virtual;
 
     function GetRootPath: WideString; virtual;
-    function GetFileRelativePath(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString; virtual;
-    function GetFilePath(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString; virtual;
+    function GetFileRelativePath(ADBType, ADataType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString; virtual;
+    function GetFilePath(ADBType, ADataType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString; virtual;
 
-    function GetFileName(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString; virtual;
-    function GetFileExt(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString; virtual;
+    function GetFileName(ADBType, ADataType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString; virtual;
+    function GetFileExt(ADBType, ADataType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString; virtual;
     
-    function GetFileUrl(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString; overload; virtual;
-    function GetFileUrl(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString; overload; virtual;
+    function GetFileUrl(ADBType, ADataType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString; overload; virtual;
+    function GetFileUrl(ADBType, ADataType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString; overload; virtual;
 
-    function CheckOutFileUrl(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString; virtual;
+    function CheckOutFileUrl(ADBType, ADataType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString; virtual;
 
     property InstallPath: WideString read GetInstallPath write SetInstallPath;  
-    property DataBasePath[ADBType: integer; ADataSrc: integer]: WideString read GetDataBasePath write SetDataBasePath;
+    property DataBasePath[ADBType, ADataType: integer; ADataSrc: integer]: WideString read GetDataBasePath write SetDataBasePath;
   end;
   
 implementation
 
-function TBasePath.GetDataBasePath(ADBType: integer; ADataSrc: integer): WideString;
+function TBasePath.GetDataBasePath(ADBType, ADataType: integer; ADataSrc: integer): WideString;
 begin
   Result := '';
 end;
 
-function TBasePath.GetFileUrl(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString;
+function TBasePath.GetFileUrl(ADBType, ADataType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString;
 begin
-  Result := GetFileUrl(ADBType, ADataSrc, AParamType, AParam, '');
+  Result := GetFileUrl(ADBType, ADataType, ADataSrc, AParamType, AParam, '');
 end;
 
-function TBasePath.CheckOutFileUrl(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString; 
+function TBasePath.CheckOutFileUrl(ADBType, ADataType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString; 
 begin
   Result := '';
 end;
@@ -51,27 +51,27 @@ begin
   Result := '';
 end;
 
-function TBasePath.GetFileRelativePath(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString; 
+function TBasePath.GetFileRelativePath(ADBType, ADataType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString; 
 begin
   Result := '';
 end;
 
-function TBasePath.GetFilePath(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString;
+function TBasePath.GetFilePath(ADBType, ADataType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString;
 begin
   Result := '';
 end;
 
-function TBasePath.GetFileName(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString; 
+function TBasePath.GetFileName(ADBType, ADataType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString; 
 begin
   Result := '';
 end;
 
-function TBasePath.GetFileExt(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString;
+function TBasePath.GetFileExt(ADBType, ADataType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString;
 begin
   Result := '';
 end;
 
-function TBasePath.GetFileUrl(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString;
+function TBasePath.GetFileUrl(ADBType, ADataType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString;
 begin
   Result := '';
 end;
@@ -91,7 +91,7 @@ begin
   Result := false;
 end;
 
-procedure TBasePath.SetDataBasePath(ADBType: integer; ADataSrc: integer; const Value: WideString);
+procedure TBasePath.SetDataBasePath(ADBType, ADataType: integer; ADataSrc: integer; const Value: WideString);
 begin
 end;
 

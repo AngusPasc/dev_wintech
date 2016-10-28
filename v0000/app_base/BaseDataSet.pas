@@ -3,11 +3,19 @@ unit BaseDataSet;
 interface
 
 type
+  TBaseDataSetData = record
+    DBType: integer;
+    DataType: integer;
+    DataSrcID: integer;    
+  end;
+  
   TBaseDataSetAccess = class
   protected
+    fBaseDataSetData: TBaseDataSetData;
     function GetRecordCount: Integer; virtual;
     function GetRecordItem(AIndex: integer): Pointer; virtual;
   public
+    constructor Create; virtual;
     function FindRecordByKey(AKey: Integer): Pointer; virtual;
     function CheckOutKeyRecord(AKey: Integer): Pointer; virtual;
 
@@ -15,11 +23,19 @@ type
     procedure Clear; virtual;
     property RecordCount: Integer read GetRecordCount;
     property RecordItem[AIndex: integer]: Pointer read GetRecordItem;
+    property DBType: integer read fBaseDataSetData.DBType write fBaseDataSetData.DBType;
+    property DataType: integer read fBaseDataSetData.DataType write fBaseDataSetData.DataType;
+    property DataSrcID: integer read fBaseDataSetData.DataSrcID write fBaseDataSetData.DataSrcID;    
   end;
 
 implementation
 
 { TBaseDataSetAccess }
+
+constructor TBaseDataSetAccess.Create;
+begin
+  FillChar(fBaseDataSetData, SizeOf(fBaseDataSetData), 0);
+end;
 
 function TBaseDataSetAccess.CheckOutKeyRecord(AKey: Integer): Pointer;
 begin
