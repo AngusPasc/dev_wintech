@@ -4,7 +4,9 @@ interface
                   
 type
   PDateTimeParseRecord = ^TDateTimeParseRecord;
-  TDateTimeParseRecord = record
+  TDateTimeParseRecord = packed record
+    IsHasDateStr: Boolean;
+    IsHasTimeStr: Boolean;
     Year: Word;
     Month: Word;
     Day: Word;
@@ -18,7 +20,8 @@ type
         
   function SeasonOfMonth(AMonth: Word): Word;
   function IsCurrentSeason(ADate: TDateTime): Boolean;   
-  procedure ParseDateTime(ADateTimeParse: PDateTimeParseRecord; ADateTimeString: AnsiString);
+  procedure ParseDateTime(ADateTimeParse: PDateTimeParseRecord; ADateTimeString: AnsiString); overload;
+  function ParseDateTime(ADateTimeString: AnsiString): TDateTime; overload;
 
 implementation
 
@@ -41,6 +44,19 @@ begin
   Result := (tmpYear1 = tmpYear2) and (SeasonOfMonth(tmpMonth1) = SeasonOfMonth(tmpMonth2));
 end;
 
+function ParseDateTime(ADateTimeString: AnsiString): TDateTime;
+var
+  tmpParse: TDateTimeParseRecord;
+begin
+  FillChar(tmpParse, SizeOf(tmpParse), 0);
+  ParseDateTime(@tmpParse, ADateTimeString);
+  Result := 0;
+  if tmpParse.IsHasDateStr then
+    Result := Result + tmpParse.Date;
+  if tmpParse.IsHasTimeStr then
+    Result := Result + tmpParse.Time;
+end;
+
 procedure ParseDateTime(ADateTimeParse: PDateTimeParseRecord; ADateTimeString: AnsiString);
 var
   i: integer;
@@ -51,12 +67,15 @@ begin
   // 2014/06/12-10:30
   i := 0;                  
   FillChar(tmpFormat, SizeOf(tmpFormat), 0);
-  if 0 < Pos(':', ADateTimeString) then
+  tmpFormat.TimeSeparator := ':';
+  ADateTimeParse.IsHasTimeStr := 0 < Pos(':', ADateTimeString);
+  if ADateTimeParse.IsHasTimeStr then
   begin
-    tmpFormat.TimeSeparator := ':';
-    i := Pos('-', ADateTimeString);   
+    tmpFormat.ShortTimeFormat := 'hh:nn:ss';
+    tmpFormat.LongTimeFormat := 'hh:nn:ss';
+    i := Pos(#32, ADateTimeString);
     if 0 >= i then
-      i := Pos(#32, ADateTimeString);
+      i := LastDelimiter('-', ADateTimeString);
   end;
   if 0 < i then
   begin
@@ -66,20 +85,22 @@ begin
   begin
     tmpStrDate := ADateTimeString;
     tmpStrTime := '';
-  end;
-  if 0 < Pos('/', tmpStrDate) then
+  end;          
+  ADateTimeParse.IsHasDateStr := '' <> Trim(tmpStrDate);
+  if ADateTimeParse.IsHasDateStr then
   begin
-    tmpFormat.DateSeparator := '/';
-  end else
-  begin
-    if 0 < Pos('-', tmpStrDate) then
-      tmpFormat.DateSeparator := '-';
+    if 0 < Pos('/', tmpStrDate) then
+    begin
+      tmpFormat.DateSeparator := '/';
+    end else
+    begin
+      if 0 < Pos('-', tmpStrDate) then
+        tmpFormat.DateSeparator := '-';
+    end;
+    tmpFormat.ShortDateFormat := 'yyyy' + tmpFormat.DateSeparator + 'mm' + tmpFormat.DateSeparator + 'dd';
+    tmpFormat.LongDateFormat := 'yyyy' + tmpFormat.DateSeparator + 'mm' + tmpFormat.DateSeparator + 'dd';
+    ADateTimeParse.Date := StrToDateDef(tmpStrDate, 0, tmpFormat);
   end;
-  tmpFormat.ShortDateFormat := 'yyyy' + tmpFormat.DateSeparator + 'mm' + tmpFormat.DateSeparator + 'dd';
-  tmpFormat.LongDateFormat := 'yyyy' + tmpFormat.DateSeparator + 'mm' + tmpFormat.DateSeparator + 'dd';
-  tmpFormat.ShortTimeFormat := 'hh:nn:ss';
-  tmpFormat.LongTimeFormat := 'hh:nn:ss';
-  ADateTimeParse.Date := StrToDateDef(tmpStrDate, 0, tmpFormat);
   if '' <> tmpStrTime then
   begin
     ADateTimeParse.Time := StrToTimeDef(tmpStrTime, 0, tmpFormat);
@@ -105,8 +126,11 @@ begin
   end;
   if 0 < ADateTimeParse.Date then
     DecodeDate(ADateTimeParse.Date, ADateTimeParse.Year, ADateTimeParse.Month, ADateTimeParse.Day);
-  if 0 < ADateTimeParse.Time then
+                   
+  if ADateTimeParse.IsHasTimeStr then
+  begin
     DecodeTime(ADateTimeParse.Time, ADateTimeParse.Hour, ADateTimeParse.Minute, ADateTimeParse.Second, ADateTimeParse.MSecond);
+  end;
 end;
 
 end.
