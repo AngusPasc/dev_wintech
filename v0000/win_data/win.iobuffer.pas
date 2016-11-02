@@ -151,7 +151,7 @@ type
   function CheckOutIOBuffer(ASizeMode: Integer = SizeMode_16k): PIOBuffer;    
   procedure CheckInIOBuffer(var AIOBuffer: PIOBuffer);  
   function CheckOutIOBufferExNode(AIOBuffer: PIOBuffer): PIOBufferExNode; 
-  procedure CheckInIOBufferExNode(AIOBufferExNode: PIOBufferExNode);
+  procedure CheckInIOBufferExNode(var AIOBufferExNode: PIOBufferExNode);
   
   function RepackIOBuffer(AIOBuffer: PIOBuffer): PIOBuffer;  
   procedure ClearIOBuffer(AIOBuffer: PIOBuffer);  
@@ -287,7 +287,7 @@ begin
   Result := tmpNode;
 end;
 
-procedure CheckInIOBufferExNode(AIOBufferExNode: PIOBufferExNode);
+procedure CheckInIOBufferExNode(var AIOBufferExNode: PIOBufferExNode);
 begin
   if nil <> AIOBufferExNode then
   begin
