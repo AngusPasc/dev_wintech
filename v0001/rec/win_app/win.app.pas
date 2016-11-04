@@ -3,7 +3,7 @@ unit win.app;
 interface
 
 uses
-  Windows, Messages;
+  Windows, Messages, win.thread;
   
 type
   PWinAppRecord   = ^TWinAppRecord;
@@ -15,7 +15,12 @@ type
   end;
                        
   function ProcessMessage(App: PWinAppRecord): Boolean;
-
+                           
+var
+  ShutDownMonitorThread: TSysWinThread = (
+    core: (threadhandle: 0; threadid: 0)
+  );
+       
 implementation
 
 

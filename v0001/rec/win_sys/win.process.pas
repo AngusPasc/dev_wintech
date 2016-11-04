@@ -44,9 +44,13 @@ type
   end;
   
   procedure RunProcessA(AProcess: POwnedProcess; AExeFileUrl: AnsiString; ARunProcess: PRunProcess = nil);
-
+  procedure StartShutDownMonitorThread();
+                
 implementation
 
+uses
+  win.thread, win.app;
+  
 procedure RunProcessA(AProcess: POwnedProcess; AExeFileUrl: AnsiString; ARunProcess: PRunProcess = nil);
 var
   tmpIsOwnedRun: Boolean;
@@ -86,6 +90,20 @@ begin
     FreeMem(AProcess.Run);
     AProcess.Run := nil;
   end;
+end;
+                          
+function ShutDownMonitorThreadProc(AThread: PSysWinThread): DWORD; stdcall;
+begin
+  Sleep(1000);
+  TerminateProcess(GetCurrentProcess, 0);
+end;
+            
+procedure StartShutDownMonitorThread();
+begin
+  ShutDownMonitorThread.Core.ThreadHandle :=
+        Windows.CreateThread(nil, 0, @ShutDownMonitorThreadProc, @ShutDownMonitorThread, CREATE_SUSPENDED,
+        ShutDownMonitorThread.Core.ThreadId);
+  Windows.ResumeThread(ShutDownMonitorThread.Core.ThreadHandle);
 end;
 
 end.

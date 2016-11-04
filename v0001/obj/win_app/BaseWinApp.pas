@@ -47,6 +47,7 @@ implementation
 
 uses
   SysUtils,
+  //UtilsLog,
   messages,
   windef_msg;
   
@@ -68,14 +69,20 @@ procedure TBaseWinApp.Terminate;
 begin
   if IsActiveStatus_Active = Self.IsActiveStatus then
   begin
+    //Log('BaseWinApp.pas', 'Terminate');
     Self.IsActiveStatus := IsActiveStatus_RequestShutdown;
     if IsWIndow(fBaseWinAppData.WinAppRecord.AppCmdWnd) then
     begin
       PostMessage(fBaseWinAppData.WinAppRecord.AppCmdWnd, WM_AppRequestEnd, 0, 0);
     end;
+    //Log('BaseWinApp.pas', 'Finalize');    
     Self.Finalize;       
-      PostMessage(fBaseWinAppData.WinAppRecord.AppCmdWnd, WM_Quit, 0, 0);
-    PostQuitMessage(0);
+    //PostMessage(fBaseWinAppData.WinAppRecord.AppCmdWnd, WM_Quit, 0, 0);
+    //Log('BaseWinApp.pas', 'PostQuitMessage0');    
+    //PostQuitMessage(0);
+  end else
+  begin
+    //Windows.TerminateProcess(GetCurrentProcess, 0);
   end;
 end;
 
