@@ -21,13 +21,14 @@ uses
   win.wnd in '..\..\..\..\v0001\winproc\win.wnd.pas',
   DataChain in '..\commonserver\DataChain.pas',
   NetBase in '..\commonserver\NetBase.pas',
-  NetMgr in '..\commonserver\NetMgr.pas',
   NetBaseObj in '..\commonserver\NetBaseObj.pas',
-  NetServerClientConnectIocp in '..\commonserver\NetServerClientConnectIocp.pas',
-  NetServerIocp in '..\commonserver\NetServerIocp.pas',
   BaseDataIO in '..\commonserver\BaseDataIO.pas',
+  NetHttpServerClientConnectIocp in 'NetHttpServerClientConnectIocp.pas',
+  NetHttpServerIocp in 'NetHttpServerIocp.pas',
+  NetMgrHttpServer in 'NetMgrHttpServer.pas',
   HttpServerIocpApp in 'HttpServerIocpApp.pas',
-  HttpServerIocpAppStart in 'HttpServerIocpAppStart.pas';
+  HttpServerIocpAppStart in 'HttpServerIocpAppStart.pas',
+  HttpProtocol_Server in 'HttpProtocol_Server.pas';
 
 {$R *.res}
 

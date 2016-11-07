@@ -3,7 +3,7 @@ unit HttpServerIocpApp;
 interface
 
 uses
-  Windows, BaseApp, BaseWinApp, NetMgr;
+  Windows, BaseApp, BaseWinApp, NetMgrHttpServer;
   
 type
   THttpServerIocpAppData = record

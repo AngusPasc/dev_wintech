@@ -10,7 +10,7 @@ uses
   //SDLogutils,
   BaseDataIO,
   NetBaseObj,
-  NetServerIocp,
+  NetHttpServerIocp,
   HttpServerIocpApp;
 
 procedure TestTCPServer();
