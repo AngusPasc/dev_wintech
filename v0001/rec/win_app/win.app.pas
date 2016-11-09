@@ -15,7 +15,9 @@ type
   end;
                        
   function ProcessMessage(App: PWinAppRecord): Boolean;
-                           
+                                           
+  procedure StartShutDownMonitorThread();
+  
 var
   ShutDownMonitorThread: TSysWinThread = (
     core: (threadhandle: 0; threadid: 0)
@@ -114,6 +116,21 @@ begin
       App.IsTerminated := True;
     end;
   end;
+end;
+
+function ShutDownMonitorThreadProc(AThread: PSysWinThread): DWORD; stdcall;
+begin
+  Result := 0;
+  Sleep(1000);
+  TerminateProcess(GetCurrentProcess, Result);
+end;
+            
+procedure StartShutDownMonitorThread();
+begin
+  ShutDownMonitorThread.Core.ThreadHandle :=
+        Windows.CreateThread(nil, 0, @ShutDownMonitorThreadProc, @ShutDownMonitorThread, CREATE_SUSPENDED,
+        ShutDownMonitorThread.Core.ThreadId);
+  Windows.ResumeThread(ShutDownMonitorThread.Core.ThreadHandle);
 end;
 
 end.
