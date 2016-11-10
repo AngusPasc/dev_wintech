@@ -6,9 +6,11 @@ uses
   BasePath;
 
 const
-  IsActiveStatus_Active = 1;      
-  IsActiveStatus_RequestShutdown = 2;    
-  IsActiveStatus_Shutdown = 3;
+  IsActiveStatus_Active   = 2;
+  IsActiveStatus_Suspend  = 3; // 待定；悬而不决
+
+  IsActiveStatus_RequestShutdown = 6;
+  IsActiveStatus_Shutdown = 7;
   
 type                    
   TBaseAppPath = class;
