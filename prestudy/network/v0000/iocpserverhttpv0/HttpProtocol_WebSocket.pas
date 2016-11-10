@@ -39,11 +39,13 @@ begin
     tmpMethod := '';
     tmpPath := '';
     tmpStep := 0;
-    tmpAnsi := PAnsiChar(@AIocpBuffer.DataBufferPtr.Data[0]);
+    tmpAnsi := PAnsiChar(@AIocpBuffer.DataBufferPtr.Data[0]);    
+    //======================================
     (*//
     http://baike.baidu.com/link?url=xoViP-xBxZtadNNM_kn9w-SmwMtmorfwG16W-No_to_Pe965-
       omk8NLQ3SjMKRDhJDnJs54HlqkzVfdDq-Qw8X__PQhFY3xzDR8xBYbgNwq
-    //*)
+    //*)   
+    //======================================
     (*//
      GET /websocket HTTP/1.1#$D#$A
      Host: localhost:7785#$D#$A
@@ -64,7 +66,7 @@ begin
              _ga=GA1.1.1425599062.1470116817'#$D#$A
      Sec-WebSocket-Key: hAv1ylgsJU+wANhdd0iXBA=='#$D#$A
      Sec-WebSocket-Extensions: permessage-deflate; client_max_window_bits'#$D#$A#$D#$A
-    //*)
+    //*)     
     (*//
     用 Sec-WebSocket-Key字符串 + 258EAFA5-E914-47DA-95CA-C5AB0DC85B11
     使用SHA-1加密
@@ -72,6 +74,34 @@ begin
     
     Sec-WebSocket-Accept: K7DJLdLooIwIG/MOpvWFB3y3FE8=
     //*)
+    //======================================
+    (*//
+    GET /demo HTTP/1.1 
+    Host: example.com
+    Connection: Upgrade
+    Sec-WebSocket-Key2: 12998 5 Y3 1 .P00
+    Upgrade: WebSocket
+    Sec-WebSocket-Key1: 4@1 46546xW%0l 1 5
+    Origin: http://example.com
+    [8-byte security key]
+    //*)
+    (*//
+    http://blog.163.com/soda_water05/blog/static/21283223520141190037863/
+    Sec-WebSocket-Key1，Sec-WebSocket-Key2 和 [8-byte security key]
+    这几个头信息是 WebSocket 服务器用来生成应答信息的来源，
+    依据 draft-hixie-thewebsocketprotocol-76 草案
+
+    逐个字符读取 Sec-WebSocket-Key1 头信息中的值，将数值型字符连接到一起放到一个临时字符串里
+    同时统计所有空格的数量；
+    将在第 1 步里生成的数字字符串转换成一个整型数字，然后除以第 1 步里统计出来的空格数量
+    将得到的浮点数转换成整数型；
+    将第 2 步里生成的整型值转换为符合网络传输的网络字节数组；
+    对 Sec-WebSocket-Key2 头信息同样进行第 1 到第 3 步的操作，得到另外一个网络字节数组；
+    将 [8-byte security key] 和在第 3，第 4 步里生成的网络字节数组合并成一个 16 字节的数组
+    对第 5 步生成的字节数组使用 MD5 算法生成一个哈希值，这个哈希值就作为安全密钥返回给客户端
+    以表明服务器端获取了客户端的请求，同意创建 WebSocket 连接
+    //*)
+    //======================================
     if '' <> tmpAnsi then
     begin
       tmpLastPos := 1;
