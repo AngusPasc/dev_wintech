@@ -51,30 +51,67 @@ type
     Card        : array[1..54 * 4] of TCardRecord;
   end;
   
-  function CheckOutCards_Mj(ACardCount: Byte = 0): PCards_Mj;
+  function CheckOutCards_Mj: PCards_Mj;
+  function CheckOutCards_Poker1: PCards_Poker1;
+  function CheckOutCards_Poker2: PCards_Poker2;
+  function CheckOutCards_Poker3: PCards_Poker3;
+  function CheckOutCards_Poker4: PCards_Poker4;  
   procedure CheckInCards(var ACards: PCards);
 
   // Ï´ÅÆ  
   procedure ShuffleCards(ACards: PCards);
   
 implementation
-                                
-function CheckOutCards_Mj(ACardCount: Byte = 0): PCards_Mj;
+                                 
+procedure InitCards(ACards: PCards);     
 var
   i: integer;
-  id: integer;
+begin
+  for i := 1 to ACards.CardCount do
+  begin
+    ACards.Card[i].CardId := i;
+    ACards.Card[i].CardPos := i;
+  end;
+end;
+
+function CheckOutCards_Mj: PCards_Mj;
 begin
   Result := System.New(PCards_Mj);
   FillChar(Result^, SizeOf(TCards_Mj), 0);  
   Result.CardCount := High(Result.Card) - Low(Result.Card) + 1;
+  InitCards(PCards(Result));
+end;
 
-  id := 1;
-  for i := Low(Result.Card) to High(Result.Card) do
-  begin
-    Result.Card[i].CardId := id;
-    Result.Card[i].CardPos := id;
-    Inc(id);
-  end;
+function CheckOutCards_Poker1: PCards_Poker1;
+begin
+  Result := System.New(PCards_Poker1);
+  FillChar(Result^, SizeOf(TCards_Poker1), 0);  
+  Result.CardCount := High(Result.Card) - Low(Result.Card) + 1;    
+  InitCards(PCards(Result));
+end;
+
+function CheckOutCards_Poker2: PCards_Poker2;
+begin
+  Result := System.New(PCards_Poker2);
+  FillChar(Result^, SizeOf(TCards_Poker2), 0);  
+  Result.CardCount := High(Result.Card) - Low(Result.Card) + 1;  
+  InitCards(PCards(Result));
+end;
+
+function CheckOutCards_Poker3: PCards_Poker3;
+begin
+  Result := System.New(PCards_Poker3);
+  FillChar(Result^, SizeOf(TCards_Poker3), 0);  
+  Result.CardCount := High(Result.Card) - Low(Result.Card) + 1; 
+  InitCards(PCards(Result));
+end;
+
+function CheckOutCards_Poker4: PCards_Poker4;
+begin
+  Result := System.New(PCards_Poker4);
+  FillChar(Result^, SizeOf(TCards_Poker4), 0);  
+  Result.CardCount := High(Result.Card) - Low(Result.Card) + 1;  
+  InitCards(PCards(Result));
 end;
 
 procedure CheckInCards(var ACards: PCards);
