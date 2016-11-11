@@ -14,11 +14,11 @@ object frmWinGame: TfrmWinGame
   PixelsPerInch = 96
   TextHeight = 13
   object btn1: TButton
-    Left = 432
-    Top = 416
+    Left = 472
+    Top = 216
     Width = 75
     Height = 25
-    Caption = 'btn1'
+    Caption = 'btnMj'
     TabOrder = 0
     OnClick = btn1Click
   end
@@ -31,5 +31,14 @@ object frmWinGame: TfrmWinGame
       'mmo1')
     ScrollBars = ssVertical
     TabOrder = 1
+  end
+  object btn2: TButton
+    Left = 472
+    Top = 304
+    Width = 75
+    Height = 25
+    Caption = 'btnPoker'
+    TabOrder = 2
+    OnClick = btn2Click
   end
 end
