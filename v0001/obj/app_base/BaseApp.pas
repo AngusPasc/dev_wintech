@@ -19,7 +19,11 @@ const
   RunMode_Debug           = 4;
 
   //RunMode_BaseAppEx       = 10;
-  
+  // ¹Ø±Õ log
+  LogMode_None            = 1;
+  LogMode_Normal          = 2;   
+  LogMode_Exception       = 4;
+
 type                    
   TBaseAppPath = class;
   TBaseAppAgent = class;
@@ -28,6 +32,7 @@ type
   TBaseAppData      = packed record
     RunStatus       : Word;
     RunMode         : Word;
+    LogMode         : Word;
     AppAgent        : TBaseAppAgent;
     AppClassId      : AnsiString;
   end;
@@ -47,7 +52,8 @@ type
     procedure Terminate; virtual;
     property BaseAppData: PBaseAppData read GetBaseAppData;
     property RunStatus: Word read fBaseAppData.RunStatus write fBaseAppData.RunStatus;
-    property RunMode: Word read fBaseAppData.RunMode write fBaseAppData.RunMode;    
+    property RunMode: Word read fBaseAppData.RunMode write fBaseAppData.RunMode;
+    property LogMode: Word read fBaseAppData.LogMode write fBaseAppData.LogMode;
     property Path: TBaseAppPath read GetPath;
     property AppAgent: TBaseAppAgent read fBaseAppData.AppAgent write fBaseAppData.AppAgent;
   end;
