@@ -6,11 +6,19 @@ uses
   BasePath;
 
 const
-  IsActiveStatus_Active   = 2;
-  IsActiveStatus_Suspend  = 3; // 待定；悬而不决
+  RunStatus_Initialize    = 2;
+  RunStatus_Active        = 3;
+  RunStatus_Suspend       = 4; // 待定；悬而不决
 
-  IsActiveStatus_RequestShutdown = 6;
-  IsActiveStatus_Shutdown = 7;
+  RunStatus_RequestShutdown = 7;
+  RunStatus_Finalize      = 8;  
+  RunStatus_Shutdown      = 9;
+
+  RunMode_Normal          = 2;
+  RunMode_Release         = 3;
+  RunMode_Debug           = 4;
+
+  //RunMode_BaseAppEx       = 10;
   
 type                    
   TBaseAppPath = class;
@@ -18,9 +26,10 @@ type
   
   PBaseAppData      = ^TBaseAppData;
   TBaseAppData      = packed record
-    IsActiveStatus  : Byte;
-    AppAgent: TBaseAppAgent;
-    AppClassId  : AnsiString;
+    RunStatus       : Word;
+    RunMode         : Word;
+    AppAgent        : TBaseAppAgent;
+    AppClassId      : AnsiString;
   end;
 
   TBaseApp = class
@@ -37,7 +46,8 @@ type
     procedure Run; virtual;
     procedure Terminate; virtual;
     property BaseAppData: PBaseAppData read GetBaseAppData;
-    property IsActiveStatus: Byte read fBaseAppData.IsActiveStatus write fBaseAppData.IsActiveStatus;
+    property RunStatus: Word read fBaseAppData.RunStatus write fBaseAppData.RunStatus;
+    property RunMode: Word read fBaseAppData.RunMode write fBaseAppData.RunMode;    
     property Path: TBaseAppPath read GetPath;
     property AppAgent: TBaseAppAgent read fBaseAppData.AppAgent write fBaseAppData.AppAgent;
   end;
@@ -53,7 +63,8 @@ type
     constructor Create(AHostApp: TBaseApp); virtual;
     function Initialize: Boolean; virtual;
     procedure Finalize; virtual;
-    procedure Run; virtual;
+    procedure Run; virtual;    
+    property HostApp: TBaseApp read fBaseAppAgentData.HostApp;
   end;
 
   TBaseAppObjData = record
@@ -100,10 +111,10 @@ begin
     begin
       GlobalBaseApp.Run;
     end;                  
-    GlobalBaseApp.IsActiveStatus := IsActiveStatus_RequestShutdown;
+    GlobalBaseApp.RunStatus := RunStatus_RequestShutdown;
     GlobalBaseApp.Finalize;
   finally                
-    GlobalBaseApp.IsActiveStatus := IsActiveStatus_Shutdown;
+    GlobalBaseApp.RunStatus := RunStatus_Shutdown;
     GlobalBaseApp.Free;
   end;
 end;
@@ -115,7 +126,8 @@ begin
   GlobalBaseApp := Self;
   FillChar(fBaseAppData, SizeOf(fBaseAppData), 0);
   fBaseAppData.AppClassId := AppClassId; 
-  fBaseAppData.IsActiveStatus := IsActiveStatus_Active;
+  fBaseAppData.RunStatus := RunStatus_Active;
+  fBaseAppData.RunMode := RunMode_Normal;
 end;
 
 destructor TBaseApp.Destroy;

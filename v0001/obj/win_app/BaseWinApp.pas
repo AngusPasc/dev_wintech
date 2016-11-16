@@ -67,10 +67,10 @@ end;
           
 procedure TBaseWinApp.Terminate;
 begin
-  if IsActiveStatus_Active = Self.IsActiveStatus then
+  if RunStatus_Active = Self.RunStatus then
   begin
     //Log('BaseWinApp.pas', 'Terminate');
-    Self.IsActiveStatus := IsActiveStatus_RequestShutdown;
+    Self.RunStatus := RunStatus_RequestShutdown;
     if IsWIndow(fBaseWinAppData.WinAppRecord.AppCmdWnd) then
     begin
       PostMessage(fBaseWinAppData.WinAppRecord.AppCmdWnd, WM_AppRequestEnd, 0, 0);

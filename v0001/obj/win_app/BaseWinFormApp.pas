@@ -54,10 +54,10 @@ begin
         tmpForm.Initialize(GlobalBaseWinFormApp);
         GlobalBaseWinFormApp.Run;
       end;
-      GlobalBaseWinFormApp.IsActiveStatus := IsActiveStatus_RequestShutdown;
+      GlobalBaseWinFormApp.RunStatus := RunStatus_RequestShutdown;
       GlobalBaseWinFormApp.Finalize;
     finally         
-      GlobalBaseWinFormApp.IsActiveStatus := IsActiveStatus_Shutdown;
+      GlobalBaseWinFormApp.RunStatus := RunStatus_Shutdown;
       GlobalBaseWinFormApp.Free;
     end;
   end;
