@@ -43,7 +43,106 @@ uses
              1.2 不是炸 比较牌型一致
           
     // 5. 算分 结算 Settlement balance
+
+    顺子最大 11 张 从 3 到 K 从 4 到 A
+    
+    (54 - 3) / 3 = 17
+    17 + 17 + 20 = 54
+
 *)
+
+type
+  TCardPattern = (
+    patternNone,     
+    patternUnknown,
+    patternSingle,
+    patternDouble,
+    patternTriple,
+    patternFour,
+    patternBomb
+  );
+
+  PPatternCard  = ^TPatternCard;
+  TPatternCard  = packed record
+    Pattern     : TCardPattern;
+    MasterCount : Byte;
+    MasterStart : Byte;
+    SlaveCount  : Byte;
+  end;
+
+(*
+  normal
+    patternSingle: 
+        MasterCount = 1  单张
+        MasterCount > 1  顺子
+    patternDouble
+        MasterCount = 1  一对
+        MasterCount > 2  连对
+            SlaveCount  = 0
+    patternTriple         
+        MasterCount = 1
+            SlaveCount  = 0  三张
+            SlaveCount  = 1  三带一
+            SlaveCount  = 2  三带一对
+        MasterCount > 1   n
+            SlaveCount  = 0  飞机
+            SlaveCount  = n * 1  飞机
+            SlaveCount  = n * 2  飞机
+    patternFour     
+        MasterCount = 1    
+            SlaveCount  = 1  四带一    
+            SlaveCount  = 2  四带二
+        MasterCount = 2      连四 ??? 是否允许            
+    patternBomb 炸   
+        MasterCount : 1    
+            SlaveCount  = 0  四带一  
+*)
+  // 出牌
+  PPlayCard   = ^TPlayCard;
+  TPlayCard   = record
+    Count     : Byte;
+    Cards     : array of TPokerClassCard;
+  end;
+  
+  function CheckCardPattern(APlayCard: PPlayCard; APatternCard: PPatternCard): Boolean;
+
 implementation
+
+function CheckCardPattern(APlayCard: PPlayCard; APatternCard: PPatternCard): Boolean;
+begin
+  Result := false;
+  if nil = APlayCard then
+    exit;
+  if nil = APatternCard then
+    exit;
+  if 1 = APlayCard.Count then
+  begin
+    APatternCard.Pattern := patternSingle;
+    APatternCard.MasterCount := 1;
+    APatternCard.MasterStart := APlayCard.Cards[0].SubPoint;
+    exit;
+  end;              
+  if 2 = APlayCard.Count then
+  begin
+    if (pokerClassKing = APlayCard.Cards[0].MainClass) or
+       (pokerClassQueen = APlayCard.Cards[0].MainClass) then
+    begin
+      APatternCard.Pattern := patternBomb;
+    end else
+    begin
+      APatternCard.Pattern := patternDouble; 
+      APatternCard.MasterCount := 1;
+      APatternCard.MasterStart := APlayCard.Cards[0].SubPoint;
+    end;
+    exit;
+  end;   
+  if 3 = APlayCard.Count then
+  begin   
+    APatternCard.Pattern := patternTriple; 
+    APatternCard.MasterCount := 1;
+    APatternCard.MasterStart := APlayCard.Cards[0].SubPoint;
+    exit;
+  end;
+end;
 
 end.

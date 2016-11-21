@@ -15,9 +15,9 @@ uses
 //  TPokerCard = ();
 
 type
-  TPokerMainClass = (  
-    pokerClassUnknown,
+  TPokerMainClass = (
     pokerClassNone,
+    pokerClassUnknown,  
     pokerClassKing,     // 大王
     pokerClassQueen,    // 小王
     pokerClassSpades,   // 黑桃
@@ -26,23 +26,45 @@ type
     pokerClassClubs     // 梅花
   );
   
-  TPokerClassCard  = packed record
+  TPokerClassCard  = packed record  // 2 字节
     MainClass   : TPokerMainClass;
     SubPoint    : Byte;
   end;
-           
-  function GetPokerCaption(ACardPoker: Byte): string;
 
+  function GetPokerClass(ACardPoker: Byte): TPokerClassCard;  
+  function GetPokerCaption(ACardPoker: Byte): string;
+  
 implementation
 
 (*
-  for i := 1 to 54 do
-  begin
-    tmpColor = (i + 3) div 4;
-    tmpPoint = (i + 3) mod 4;
-    Memo1.Lines.Add(IntToStr(tmpColor) + ' -- ' + IntToStr(tmpPoint));
-  end;
+  // 初始化的时候 建张表 免得每次查 费 CPU
 *)
+
+function GetPokerClass(ACardPoker: Byte): TPokerClassCard;  
+var
+  tmpCard: Integer;
+begin
+  Result.MainClass := pokerClassUnknown;
+  Result.SubPoint := 0;
+  tmpCard := (ACardPoker - 1) mod 54 + 1;
+  Result.SubPoint := (tmpCard + 3) div 4;
+  if (0 < Result.SubPoint) and (14 > Result.SubPoint) then
+  begin
+    case (tmpCard + 3) mod 4 of
+      0: Result.MainClass := pokerClassClubs;// pokerClassClubs; // 梅花
+      1: Result.MainClass := pokerClassDiamonds;//pokerClassDiamonds; // 方块
+      2: Result.MainClass := pokerClassHearts;//pokerClassHearts; // 红桃
+      3: Result.MainClass := pokerClassSpades;//pokerClassSpades; // 黑桃
+    end;
+  end else if 14 = Result.SubPoint then
+  begin
+    case (tmpCard + 3) mod 4 of
+      0: Result.MainClass := pokerClassQueen;//pokerClassQueen; // 小王
+      1: Result.MainClass := pokerClassKing;//pokerClassKing; // 大王
+    end;
+  end;
+end;
+
 function GetPokerCaption(ACardPoker: Byte): string;
 var
   tmpCard: Integer;
