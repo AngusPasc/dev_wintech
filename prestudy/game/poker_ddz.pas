@@ -28,6 +28,20 @@ uses
                10:[1*10 (顺子)] [3*2 + 2*2 飞机]
           后出者 出牌权重 + 1
 
+          王炸 最大
+          4 * 1
+
+          A vs B
+          n * v [number * value]
+          Value =  ((n div 4) + 1)
+
+          规则
+          Value B > Value A 不能相等或小于
+
+          1. 是否是炸
+             1.1 炸
+             1.2 不是炸 比较牌型一致
+          
     // 5. 算分 结算 Settlement balance
 *)
 implementation
