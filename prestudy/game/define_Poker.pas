@@ -26,12 +26,30 @@ type
     pokerClassClubs     // 梅花
   );
   
-  TPokerClassCard  = packed record  // 2 字节
-    MainClass   : TPokerMainClass;
-    SubPoint    : Byte;
+  TPokerClassCard = packed record  // 2 字节
+    MainClass     : TPokerMainClass;
+    SubPoint      : Byte;
   end;
 
-  function GetPokerClass(ACardPoker: Byte): TPokerClassCard;  
+  TPokerPlayCard  = packed record  // 2 字节
+    ClassCard     : TPokerClassCard;
+    CardPoint     : Byte;
+    // 
+    CardStatus    : Byte;
+  end;
+
+const
+  CardStatus_Unknown    = 0;
+  CardStatus_UnAssigned = 1;
+  CardStatus_Shuffle    = 2; // 洗牌
+  CardStatus_Dealing    = 3; // 发牌 
+
+  // card in some user hand
+  CardStatus_UserHandBase = 60; // 在用户手中
+  // play card by some user
+  CardStatus_IndeskBase   = 80; // 在牌桌上
+
+  function GetPokerClass(ACardPoker: Byte): TPokerClassCard;
   function GetPokerCaption(ACardPoker: Byte): string;
   
 implementation

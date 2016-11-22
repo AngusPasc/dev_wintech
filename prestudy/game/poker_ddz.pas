@@ -98,28 +98,34 @@ type
             SlaveCount  = 0  四带一  
 *)
   // 出牌
-  PPlayCard   = ^TPlayCard;
-  TPlayCard   = record
-    Count     : Byte;
-    Cards     : array of TPokerClassCard;
+  PPlayCard     = ^TPlayCard;
+  TPlayCard     = packed record
+    UserId      : Byte;
+    Count       : Byte;
+    CardWeightValue   : Word;
+    PatternCard : TPatternCard;
+    // 最大牌 20 张
+    Cards       : array[0..20 - 1] of TPokerClassCard;
   end;
   
-  function CheckCardPattern(APlayCard: PPlayCard; APatternCard: PPatternCard): Boolean;
+  function CheckCardPattern(APlayCard: PPlayCard): Boolean;
+
+  // APrevPlayCard 上家出的牌
+  function GetCardHint(APrevPlayCard: PPlayCard; AOutputCard: PPlayCard): Boolean;
 
 implementation
 
-function CheckCardPattern(APlayCard: PPlayCard; APatternCard: PPatternCard): Boolean;
+function CheckCardPattern(APlayCard: PPlayCard): Boolean;
 begin
   Result := false;
   if nil = APlayCard then
     exit;
-  if nil = APatternCard then
-    exit;
+  // APlayCard has be sorted
   if 1 = APlayCard.Count then
   begin
-    APatternCard.Pattern := patternSingle;
-    APatternCard.MasterCount := 1;
-    APatternCard.MasterStart := APlayCard.Cards[0].SubPoint;
+    APlayCard.PatternCard.Pattern := patternSingle;
+    APlayCard.PatternCard.MasterCount := 1;
+    APlayCard.PatternCard.MasterStart := APlayCard.Cards[0].SubPoint;
     exit;
   end;              
   if 2 = APlayCard.Count then
@@ -127,22 +133,32 @@ begin
     if (pokerClassKing = APlayCard.Cards[0].MainClass) or
        (pokerClassQueen = APlayCard.Cards[0].MainClass) then
     begin
-      APatternCard.Pattern := patternBomb;
+      APlayCard.PatternCard.Pattern := patternBomb;
     end else
     begin
-      APatternCard.Pattern := patternDouble; 
-      APatternCard.MasterCount := 1;
-      APatternCard.MasterStart := APlayCard.Cards[0].SubPoint;
+      APlayCard.PatternCard.Pattern := patternDouble; 
+      APlayCard.PatternCard.MasterCount := 1;
+      APlayCard.PatternCard.MasterStart := APlayCard.Cards[0].SubPoint;
     end;
     exit;
   end;   
   if 3 = APlayCard.Count then
   begin   
-    APatternCard.Pattern := patternTriple; 
-    APatternCard.MasterCount := 1;
-    APatternCard.MasterStart := APlayCard.Cards[0].SubPoint;
+    APlayCard.PatternCard.Pattern := patternTriple; 
+    APlayCard.PatternCard.MasterCount := 1;
+    APlayCard.PatternCard.MasterStart := APlayCard.Cards[0].SubPoint;
     exit;
   end;
+end;
+
+// APrevPlayCard play card by last player
+function GetCardHint(APrevPlayCard: PPlayCard; AOutputCard: PPlayCard): Boolean;
+begin
+  Result := false;
+  if nil = APrevPlayCard then
+    exit;
+  if nil = AOutputCard then
+    exit;
 end;
 
 end.
