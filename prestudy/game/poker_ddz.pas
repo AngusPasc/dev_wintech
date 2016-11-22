@@ -63,7 +63,7 @@ type
   );
 
   PPatternCard  = ^TPatternCard;
-  TPatternCard  = packed record
+  TPatternCard  = packed record  // 4
     Pattern     : TCardPattern;
     MasterCount : Byte;
     MasterStart : Byte;
@@ -98,16 +98,18 @@ type
             SlaveCount  = 0  四带一  
 *)
   // 出牌
-  PPlayCard     = ^TPlayCard;
-  TPlayCard     = packed record
-    UserId      : Byte;
-    Count       : Byte;
-    CardWeightValue   : Word;
-    PatternCard : TPatternCard;
+  PPlayCard         = ^TPlayCard; // 22 * 4 = 88 字节
+  TPlayCard         = packed record
+    UserId          : Byte;  // 1
+    Count           : Byte;  // 1   -- 2
+    CardWeightValue : Word;  // 2   -- 4
+    PatternCard     : TPatternCard;  // 4
     // 最大牌 20 张
-    Cards       : array[0..20 - 1] of TPokerClassCard;
+    Cards           : array[0..20 - 1] of TPokerPlayCard; // 4 字节
   end;
-  
+
+  // 发消息的时候 就可以排好序发
+
   function CheckCardPattern(APlayCard: PPlayCard): Boolean;
 
   // APrevPlayCard 上家出的牌
@@ -115,40 +117,109 @@ type
 
 implementation
 
+function InternalCheckCardPattern_Card1(APlayCard: PPlayCard): Boolean; inline;
+begin
+  Result := true;
+  APlayCard.PatternCard.Pattern := patternSingle;
+  APlayCard.PatternCard.MasterCount := 1;
+  APlayCard.PatternCard.MasterStart := APlayCard.Cards[0].ClassCard.SubPoint;
+end;
+
+function InternalCheckCardPattern_Card2(APlayCard: PPlayCard): Boolean; inline;
+begin           
+  Result := false;
+  if (pokerClassQueen = APlayCard.Cards[0].ClassCard.MainClass) and
+     (pokerClassKing = APlayCard.Cards[1].ClassCard.MainClass) then
+  begin        
+    Result := true;
+    APlayCard.PatternCard.Pattern := patternBomb;
+    exit;
+  end;
+  if (APlayCard.Cards[0].ClassCard.SubPoint = APlayCard.Cards[1].ClassCard.SubPoint) then
+  begin
+    Result := true;
+    APlayCard.PatternCard.Pattern := patternDouble;
+    APlayCard.PatternCard.MasterCount := 1;
+    APlayCard.PatternCard.MasterStart := APlayCard.Cards[0].ClassCard.SubPoint;
+  end;
+end;
+                
+function InternalCheckCardPattern_Card3(APlayCard: PPlayCard): Boolean; inline;
+begin
+  Result := false;                       
+  if (APlayCard.Cards[0].ClassCard.SubPoint = APlayCard.Cards[1].ClassCard.SubPoint) and
+     (APlayCard.Cards[0].ClassCard.SubPoint = APlayCard.Cards[2].ClassCard.SubPoint) then
+  begin
+    APlayCard.PatternCard.Pattern := patternTriple;
+    APlayCard.PatternCard.MasterCount := 1;
+    APlayCard.PatternCard.MasterStart := APlayCard.Cards[0].ClassCard.SubPoint;
+  end;
+end;
+                             
+function InternalCheckCardPattern_Card4(APlayCard: PPlayCard): Boolean; inline;
+begin
+  Result := false;                   
+  if (APlayCard.Cards[0].ClassCard.SubPoint = APlayCard.Cards[1].ClassCard.SubPoint) and
+     (APlayCard.Cards[0].ClassCard.SubPoint = APlayCard.Cards[2].ClassCard.SubPoint) and
+     (APlayCard.Cards[0].ClassCard.SubPoint = APlayCard.Cards[3].ClassCard.SubPoint) then
+  begin
+    Result := true;
+    APlayCard.PatternCard.Pattern := patternBomb;
+    APlayCard.PatternCard.MasterCount := 1;
+    APlayCard.PatternCard.MasterStart := APlayCard.Cards[0].ClassCard.SubPoint;
+    exit;
+  end;     
+  if (APlayCard.Cards[1].ClassCard.SubPoint = APlayCard.Cards[1].ClassCard.SubPoint) then
+  begin
+    if (APlayCard.Cards[0].ClassCard.SubPoint = APlayCard.Cards[1].ClassCard.SubPoint) then
+    begin
+      APlayCard.PatternCard.Pattern := patternTriple;
+      APlayCard.PatternCard.MasterCount := 1;
+      APlayCard.PatternCard.MasterStart := APlayCard.Cards[1].ClassCard.SubPoint;
+      APlayCard.PatternCard.SlaveCount := 1;     
+      Result := true;
+    end else if (APlayCard.Cards[3].ClassCard.SubPoint = APlayCard.Cards[1].ClassCard.SubPoint) then
+    begin
+      APlayCard.PatternCard.Pattern := patternTriple;
+      APlayCard.PatternCard.MasterCount := 1;
+      APlayCard.PatternCard.MasterStart := APlayCard.Cards[1].ClassCard.SubPoint;
+      APlayCard.PatternCard.SlaveCount := 1;    
+      Result := true;
+    end;
+  end;
+end;
+
 function CheckCardPattern(APlayCard: PPlayCard): Boolean;
 begin
   Result := false;
   if nil = APlayCard then
+    exit;                 
+  if 1 > APlayCard.Count then
     exit;
-  // APlayCard has be sorted
+  // APlayCard has be sorted   
+  APlayCard.PatternCard.Pattern := patternUnknown;
+  APlayCard.PatternCard.SlaveCount := 0;
   if 1 = APlayCard.Count then
   begin
-    APlayCard.PatternCard.Pattern := patternSingle;
-    APlayCard.PatternCard.MasterCount := 1;
-    APlayCard.PatternCard.MasterStart := APlayCard.Cards[0].SubPoint;
+    Result := InternalCheckCardPattern_Card1(APlayCard);
     exit;
   end;              
   if 2 = APlayCard.Count then
   begin
-    if (pokerClassKing = APlayCard.Cards[0].MainClass) or
-       (pokerClassQueen = APlayCard.Cards[0].MainClass) then
-    begin
-      APlayCard.PatternCard.Pattern := patternBomb;
-    end else
-    begin
-      APlayCard.PatternCard.Pattern := patternDouble; 
-      APlayCard.PatternCard.MasterCount := 1;
-      APlayCard.PatternCard.MasterStart := APlayCard.Cards[0].SubPoint;
-    end;
-    exit;
-  end;   
-  if 3 = APlayCard.Count then
-  begin   
-    APlayCard.PatternCard.Pattern := patternTriple; 
-    APlayCard.PatternCard.MasterCount := 1;
-    APlayCard.PatternCard.MasterStart := APlayCard.Cards[0].SubPoint;
+    Result := InternalCheckCardPattern_Card2(APlayCard);
     exit;
   end;
+  if 3 = APlayCard.Count then
+  begin
+    Result := InternalCheckCardPattern_Card3(APlayCard);       
+    exit;
+  end;    
+  if 4 = APlayCard.Count then
+  begin
+    Result := InternalCheckCardPattern_Card4(APlayCard);    
+    exit;
+  end;
+  // 大于4 都是某种形式的 顺子
 end;
 
 // APrevPlayCard play card by last player
