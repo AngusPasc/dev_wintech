@@ -25,12 +25,14 @@ type
     pokerClassDiamonds, // 方块，
     pokerClassClubs     // 梅花
   );
-  
+
+  PPokerClassCard = ^TPokerClassCard;
   TPokerClassCard = packed record  // 2 字节
     MainClass     : TPokerMainClass;
     SubPoint      : Byte;
   end;
 
+  PPokerPlayCard  = ^TPokerPlayCard;
   TPokerPlayCard  = packed record  // 2 字节
     ClassCard     : TPokerClassCard;
     CardPoint     : Byte;
