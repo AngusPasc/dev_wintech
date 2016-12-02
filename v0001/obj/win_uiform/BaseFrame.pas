@@ -16,6 +16,9 @@ type
     fBaseFrameData: TfmeBaseData;
   public
     constructor Create(AOwner: TComponent); override;
+    procedure Initialize; virtual;
+    procedure CallDeactivate; virtual;
+    procedure CallActivate; virtual;
     property App: TBaseApp read fBaseFrameData.App write fBaseFrameData.App;  
   end;
 
@@ -29,6 +32,18 @@ constructor TfmeBase.Create(AOwner: TComponent);
 begin
   inherited;
   FillChar(fBaseFrameData, SizeOf(fBaseFrameData), 0);
+end;
+
+procedure TfmeBase.Initialize;
+begin
+end;
+
+procedure TfmeBase.CallDeactivate;
+begin
+end;
+
+procedure TfmeBase.CallActivate; 
+begin
 end;
 
 end.
