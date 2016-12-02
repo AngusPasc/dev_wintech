@@ -96,7 +96,13 @@ type
     patternBomb 炸   
         MasterCount : 1    
             SlaveCount  = 0  四带一  
-*)
+*)              
+  PPokerSortCards   = ^TPokerSortCards;
+  TPokerSortCards   = packed record
+    // 3, 4, 5, 6,   7, 8, 9, 10, J, Q, K, A, 2, Queen, King
+    CardPointNum    : array[1..15] of Byte;
+  end;
+
   // 出牌
   PPlayCard         = ^TPlayCard; // 22 * 4 = 88 字节
   TPlayCard         = packed record
@@ -105,7 +111,14 @@ type
     CardWeightValue : Word;  // 2   -- 4
     PatternCard     : TPatternCard;  // 4
     // 最大牌 20 张
-    Cards           : array[0..20 - 1] of TPokerPlayCard; // 4 字节
+    Cards           : array[1..20] of TPokerPlayCard; // 4 字节
+  end;
+
+  // 手牌
+  PHandCard         = ^THandCard;        
+  THandCard         = packed record
+    Cards           : array[1..20] of TPokerPlayCard; // 4 字节
+    SortCards       : TPokerSortCards;
   end;
 
   // 发消息的时候 就可以排好序发
