@@ -11,8 +11,9 @@ uses
 implementation
 
 uses
-  uidraw.windc;
-  
+  uidraw.windc,
+  uidraw.text.windc;
+
 procedure UIFormWndWMPaint(AUIFormWnd: PUIFormWindow; wparam: WParam; lparam: LParam);
 var
   tmpDC: HDC;
@@ -21,10 +22,11 @@ begin
   if AUIFormWnd.ClientRect.Left = AUIFormWnd.ClientRect.Right then
   begin
     Windows.GetClientRect(AUIFormWnd.BaseWnd.WndHandle, AUIFormWnd.ClientRect);
-
-    DCFillRect(@AUIFormWnd.MemDC, AUIFormWnd.ClientRect);
   end;
-  
+
+  DCFillRect(@AUIFormWnd.MemDC, AUIFormWnd.ClientRect);
+  DCTextOut(@AUIFormWnd.MemDC, AUIFormWnd.ClientRect);
+
   tmpDC := BeginPaint(AUIFormWnd.BaseWnd.WndHandle, tmpPaint);
   Windows.BitBlt(tmpDC, 0, 0,
     AUIFormWnd.ClientRect.Right,
