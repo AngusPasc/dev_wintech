@@ -67,7 +67,7 @@ implementation
 
 uses
   Math,
-  win.datamove,
+  data.move.windows,
   Sysutils;
   
 function IsRectEmpty(const ARect: TUIRect): Boolean;
