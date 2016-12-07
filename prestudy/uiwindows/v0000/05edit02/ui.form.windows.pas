@@ -5,16 +5,18 @@ interface
 uses
   Windows,
   uiwin.dc,
-  uiwin.wnd;
+  uiwin.wnd,
+  uictrl.form;
 
 type
   PUIFormWindow     = ^TUIFormWindow;
-  TUIFormWindow     = record
+  TUIFormWindow     = packed record
     BaseWnd         : TWndUI;
     MemDC           : TWinDC;
     // this client rect is not wnd client rect
     // but it is internal client rect
     ClientRect      : TRect;
+    Form            : PUIControlForm;
   end;
   
 implementation

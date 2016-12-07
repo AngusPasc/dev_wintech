@@ -7,29 +7,33 @@ uses
   Messages,
   uiwin.dc,
   uiwin.wnd,
-  ui.form.windows,
-  uiedittext;
+  uictrl.edit,  
+  uictrl.button,
+  ui.form.windows;
                  
 type
-  PUIWindow         = ^TUIWindow;    
-  TUIWindow         = record
+  PUIWinTest        = ^TUIWinTest;    
+  TUIWinTest        = record
     FormWindow      : TUIFormWindow;
-    //TestUIEdit      : TUIEdit;    
+    //TestUIEdit      : TUIEdit;
+    TestEdit        : PUIControlEdit;    
+    TestButton        : PUIControlButton;
+    
     CursorHandle: HCURSOR;
     //TestFocusUIView : PUIView;
     FocusMode: integer;  
   end;
   
 var
-  UIWindow_Test1: TUIWindow;  
-  EditTextTest: TUIEditText;
+  UIWindow_Test1: TUIWinTest; 
     
-  procedure CreateUIWindow1(AUIWindow: PUIWindow);
+  procedure CreateUIWindow1(AUIWindow: PUIWinTest);
 
 implementation
 
 uses
-  uictrl.edit.text,
+  data.text,
+  uictrl.form,
   uiwindow.wndproc;
                  
 function UIWndProcW(AWnd: HWND; AMsg: UINT; wParam: WPARAM; lParam: LPARAM): LRESULT; stdcall;
@@ -37,33 +41,53 @@ begin
   Result := UIFormWndProcW(@UIWindow_Test1.FormWindow, AWnd, AMsg, wParam, lParam);
 end;
 
-procedure CreateUIWindow1(AUIWindow: PUIWindow);
+procedure CreateUIWindow1(AUIWindow: PUIWinTest);
 var
   tmpRegWndClass: TWndClassW;
   tmpCheckWndClass: TWndClassW;
   tmpIsRegistered: Boolean;
-begin
+begin                      
+  AUIWindow.FormWindow.Form := CheckOutUIForm;
   
-  FillChar(EditTextTest, SizeOf(EditTextTest), 0);
-  EditTextTest.EditLine := CheckOutTextLine;
+  AUIWindow.TestEdit := CheckOutUIEdit;
+  AUIWindow.TestEdit.Base.BoundRect.Left := 30;
+  AUIWindow.TestEdit.Base.BoundRect.Top := 55;
 
-  EditTextAdd(@EditTextTest, 'A');
-  EditTextAdd(@EditTextTest, 'B');
-  EditTextAdd(@EditTextTest, 'C');
-  EditTextAdd(@EditTextTest, 'D');
+  AUIWindow.TestEdit.Base.BoundRect.Right := AUIWindow.TestEdit.Base.BoundRect.Left + 100;
+  AUIWindow.TestEdit.Base.BoundRect.Bottom := AUIWindow.TestEdit.Base.BoundRect.Top + 23;
 
-  EditTextAdd(@EditTextTest, 'E');
-  EditTextAdd(@EditTextTest, 'F');
-  EditTextAdd(@EditTextTest, 'G');
-  EditTextAdd(@EditTextTest, 'H');
+  UIControlAdd(@AUIWindow.TestEdit.Base, @AUIWindow.FormWindow.Form.Base);
+
+  AUIWindow.TestButton := CheckOutUIButton;    
+  AUIWindow.TestButton.Base.BoundRect.Left := 30;
+  AUIWindow.TestButton.Base.BoundRect.Top := 95;
+
+  AUIWindow.TestButton.Base.BoundRect.Right := AUIWindow.TestButton.Base.BoundRect.Left + 100;
+  AUIWindow.TestButton.Base.BoundRect.Bottom := AUIWindow.TestButton.Base.BoundRect.Top + 23;
+
+  UIControlAdd(@AUIWindow.TestButton.Base, @AUIWindow.FormWindow.Form.Base);
+
   
-  EditTextAdd(@EditTextTest, 'I');
-  EditTextAdd(@EditTextTest, 'J');   
-  EditTextAdd(@EditTextTest, 'K');
-
-  if 0 = EditTextTest.EditPos.LinePos then
-  begin
-  end;
+//  FillChar(EditTextTest, SizeOf(EditTextTest), 0);
+//  EditTextTest.EditLine := CheckOutTextLine;
+//
+//  EditTextAdd(@EditTextTest, 'A');
+//  EditTextAdd(@EditTextTest, 'B');
+//  EditTextAdd(@EditTextTest, 'C');
+//  EditTextAdd(@EditTextTest, 'D');
+//
+//  EditTextAdd(@EditTextTest, 'E');
+//  EditTextAdd(@EditTextTest, 'F');
+//  EditTextAdd(@EditTextTest, 'G');
+//  EditTextAdd(@EditTextTest, 'H');
+//  
+//  EditTextAdd(@EditTextTest, 'I');
+//  EditTextAdd(@EditTextTest, 'J');   
+//  EditTextAdd(@EditTextTest, 'K');
+//
+//  if 0 = EditTextTest.EditPos.LinePos then
+//  begin
+//  end;
 
   FillChar(tmpRegWndClass, SizeOf(tmpRegWndClass), 0);
   tmpRegWndClass.lpfnWndProc := @UIWndProcW;

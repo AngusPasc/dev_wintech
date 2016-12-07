@@ -3,7 +3,7 @@ unit uiedittext;
 interface
 
 uses
-  uictrl.edit.text;
+  data.text;
   
 (*
   // all this unit should not use any windows unit
@@ -16,14 +16,14 @@ type
   PUIEdit           = ^TUIEdit;     
   
   TUIEditTextPos    = packed record
-    EditLine        : PEditTextLine;     
+    EditLine        : PTextLine;     
     LinePos         : Integer;
-    EditDataNode    : PEditTextDataNodeW;
+    EditDataNode    : PTextDataNodeW;
     NodePos         : Byte;
   end;
 
   TUIEditText       = packed record
-    EditLine        : PEditTextLine;
+    EditLine        : PTextLine;
     EditPos         : TUIEditTextPos;
   end;
 
@@ -39,7 +39,7 @@ implementation
              
 procedure EditTextAdd(AEditText: PUIEditText; AChar: WideChar);
 var
-  tmpNode: PEditTextDataNodeW;
+  tmpNode: PTextDataNodeW;
 begin    
   if nil = AEditText then
     exit;

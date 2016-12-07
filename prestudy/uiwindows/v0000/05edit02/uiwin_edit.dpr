@@ -5,6 +5,7 @@ uses
   sys.datatype in '..\..\..\..\v0001\sys.datatype.pas',
   base.run in '..\..\..\..\v0001\rec\app_base\base.run.pas',
   Base.Thread in '..\..\..\..\v0001\rec\app_base\Base.Thread.pas',
+  data.text in '..\..\..\..\v0001\rec\data\data.text.pas',
   win.thread in '..\..\..\..\v0001\rec\win_sys\win.thread.pas',
   ui.texcolor in '..\..\..\..\v0001\rec\ui_base\ui.texcolor.pas',
   ui.space in '..\..\..\..\v0001\rec\ui_base\ui.space.pas',
@@ -21,12 +22,18 @@ uses
   uiview_space in '..\..\..\..\v0001\rec\ui_view\uiview_space.pas',
   uiview_shape in '..\..\..\..\v0001\rec\ui_view\uiview_shape.pas',
   UtilsLog in '..\..\..\..\v0000\win_utils\UtilsLog.pas',
+  uidraw.windc in '..\..\..\..\v0001\winui\uidraw.windc.pas',
+  uidraw.text.windc in '..\..\..\..\v0001\winui\uidraw.text.windc.pas',
   uiedittext in 'uiedittext.pas',
   uiwindow.wndproc in 'uiwindow.wndproc.pas',
   uiwindow.wndproc.edit in 'uiwindow.wndproc.edit.pas',
   uiwindow.wndproc.button in 'uiwindow.wndproc.button.pas',
   uitest.uiwindow in 'uitest.uiwindow.pas',
-  ui.form.windows in 'ui.form.windows.pas';
+  ui.form.windows in 'ui.form.windows.pas',
+  uictrl.edit.text in 'uictrl.edit.text.pas',
+  uiwindow.wndproc_mouse in 'uiwindow.wndproc_mouse.pas',
+  uictrl.form in 'uictrl.form.pas',
+  uictrl in 'uictrl.pas';
 
 {$R *.res}
 
