@@ -29,11 +29,12 @@ var
 implementation
 
 uses
+  uictrl.edit.text,
   uiwindow.wndproc;
                  
 function UIWndProcW(AWnd: HWND; AMsg: UINT; wParam: WPARAM; lParam: LPARAM): LRESULT; stdcall;
 begin
-  Result := UIWindowProcW(@UIWindow_Test1, AWnd, AMsg, wParam, lParam);
+  Result := UIFormWndProcW(@UIWindow_Test1.FormWindow, AWnd, AMsg, wParam, lParam);
 end;
 
 procedure CreateUIWindow1(AUIWindow: PUIWindow);

@@ -2,14 +2,19 @@ unit ui.form.windows;
 
 interface
 
-uses   
+uses
+  Windows,
   uiwin.dc,
   uiwin.wnd;
-  
+
 type
-  TUIFormWindow = record
+  PUIFormWindow     = ^TUIFormWindow;
+  TUIFormWindow     = record
     BaseWnd         : TWndUI;
     MemDC           : TWinDC;
+    // this client rect is not wnd client rect
+    // but it is internal client rect
+    ClientRect      : TRect;
   end;
   
 implementation

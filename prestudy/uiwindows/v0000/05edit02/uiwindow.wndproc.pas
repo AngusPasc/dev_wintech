@@ -4,15 +4,27 @@ interface
 
 uses
   Windows,
+  Messages,
+  ui.form.windows,
   uiwin.wnd;
 
-  function UIWindowProcW(AUIWnd: PWndUI; AWnd: HWND; AMsg: UINT; wParam: WPARAM; lParam: LPARAM): LRESULT;
+  function UIFormWndProcW(AUIWnd: PUIFormWindow; AWnd: HWND; AMsg: UINT; wParam: WPARAM; lParam: LPARAM): LRESULT;
 
 implementation
 
-function UIWindowProcW(AUIWnd: PWndUI; AWnd: HWND; AMsg: UINT; wParam: WPARAM; lParam: LPARAM): LRESULT;
+uses
+  uiwindow.wndproc_paint;
+  
+function UIFormWndProcW(AUIWnd: PUIFormWindow; AWnd: HWND; AMsg: UINT; wParam: WPARAM; lParam: LPARAM): LRESULT;
 begin
-  Result := DefWindowProcW(AWnd, AMsg, wParam, lParam);
+  Result := 0;
+  case AMsg of
+    WM_Paint: begin
+      UIFormWndWMPaint(AUIWnd, wparam, lparam);
+    end;
+    else
+    Result := DefWindowProcW(AWnd, AMsg, wParam, lParam);
+  end;
 end;
 
 end.
