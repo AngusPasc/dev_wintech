@@ -3,7 +3,7 @@ unit uiwindow.wndproc_key;
 interface
 
 uses
-  Windows,
+  Windows, IMM,
   ui.form.windows;
   
   procedure UIFormWndWMKeyDown(AUIFormWnd: PUIFormWindow; wparam: WParam; lparam: LParam);   
@@ -103,8 +103,34 @@ procedure UIFormWndWMUniChar(AUIFormWnd: PUIFormWindow; wparam: WParam; lparam: 
 begin
 end;
 
+(*//
+// 如果你要自己处理键盘和输入法的输入而不用Eidt或richedit等控件的话
+至少需要做以下处理以下消息WM_IME_STARTCOMPOSITION;WM_IME_ENDCOMPOSITION;WM_IME_COMPOSITION
+
+关于光标的一些函数
+BOOL CreateCaret(HWND hWnd,HBITMAP hBitmap,int nWidth,int nHeight);为窗口创建光标
+BOOL DestroyCaret();销毁光标
+UINT GetCaretBlinkTime();光标闪烁间隔时间
+BOOL GetCaretPos(LPPOINT lpPoint);光标在当前窗口的client位置
+BOOL HideCaret(HWND hWnd);隐藏
+BOOL SetCaretBlinkTime(UINT uMSeconds);光标闪烁间隔时间
+BOOL SetCaretPos(int X,int Y);位置
+BOOL ShowCaret(HWND hWnd);显示
+//*)
 function UIFormWndWMIME_STARTCOMPOSITION(AUIFormWnd: PUIFormWindow; AMsg: UINT; wparam: WParam; lparam: LParam): LRESULT;          //= $010D;
-begin                           
+var
+  tmpIMC: HIMC;
+  tmpCompForm: COMPOSITIONFORM;
+begin
+  tmpIMC := Imm.ImmGetContext(AUIFormWnd.BaseWnd.WndHandle);
+  tmpCompForm.dwStyle := CFS_POINT;
+  tmpCompForm.ptCurrentPos.x := 10;//用实际的值代替
+  tmpCompForm.ptCurrentPos.y := 10;//用实际的值代替
+  Imm.ImmSetCompositionWindow(tmpIMC, @tmpCompForm);
+    //DropCaret();可在此处隐藏光标，在OnImeEndComposition消息处理中再显示光标
+  Imm.ImmReleaseContext(AUIFormWnd.BaseWnd.WndHandle, tmpIMC);
+  
+  DefWindowProc(AUIFormWnd.BaseWnd.WndHandle, WM_IME_STARTCOMPOSITION, wParam, lParam);   
   if IsWindowUnicode(AUIFormWnd.BaseWnd.WndHandle) then
   begin
     Result := DefWindowProcW(AUIFormWnd.BaseWnd.WndHandle, AMsg, wParam, lparam);
@@ -120,7 +146,34 @@ begin
 end;
 
 function UIFormWndWMIME_COMPOSITION(AUIFormWnd: PUIFormWindow; AMsg: UINT; wparam: WParam; lparam: LParam): LRESULT;        //= $010F;
+var
+  tmpIMC: HIMC;
+  tmpBytes: LongWord;
+  tmpWideChars: array[0..200 - 1] of WideChar;  
+  tmpCompForm: COMPOSITIONFORM;
+  tmpCursorPos: TPoint;
 begin
+  (*//
+  if 0 <> (lparam and GCS_RESULTSTR) then
+  begin            
+    tmpIMC := Imm.ImmGetContext(AUIFormWnd.BaseWnd.WndHandle);
+    if (0 <> tmpIMC) then
+    begin
+      try
+        tmpBytes := Imm.ImmGetCompositionStringW(tmpIMC, GCS_RESULTSTR, @tmpWideChars[0], (200-1) * 2);
+        Windows.getcursorPos(tmpCursorPos);
+        tmpCompForm.dwStyle := CFS_POINT;
+        tmpCompForm.ptCurrentPos.x := tmpCursorPos.x;
+        tmpCompForm.ptCurrentPos.y := tmpCursorPos.y;
+        Imm.ImmSetCompositionWindow(tmpIMC, @tmpCompForm);
+        Result := 0;
+        exit;
+      finally
+        Imm.ImmReleaseContext(AUIFormWnd.BaseWnd.WndHandle, tmpIMC);
+      end;
+    end;
+  end;
+  //*)
   Result := DefWindowProcW(AUIFormWnd.BaseWnd.WndHandle, AMsg, wParam, lparam);
 end;
 
