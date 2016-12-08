@@ -10,7 +10,14 @@ type
   PUIControlEdit    = ^TUIControlEdit;
   TUIControlEdit    = record
     Base            : TUIBaseControl;    
-    EditTextTest: TUIEditText;
+    EditText        : TUIEditText;
+    // FMX firemonkey design
+    // Background: FMX.Objects.TRectangle;
+    // Content: Tlayout;
+    // foreground: TBrushObject;
+    // selection: TBrushObject;
+    // font: TFontObject;
+    // prompt: TLabel;
   end;
         
   function CheckOutUIEdit: PUIControlEdit;

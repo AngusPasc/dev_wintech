@@ -7,13 +7,15 @@ uses
   ui.form.windows;
   
   procedure UIFormWndWMPaint(AUIFormWnd: PUIFormWindow; wparam: WParam; lparam: LParam);
+  function UIFormWndWMEraseBkGND(AUIFormWnd: PUIFormWindow; wparam: WParam; lparam: LParam): LRESULT;
 
 implementation
 
 uses
   uiwin.dc,
   uictrl,
-  uictrl.form,
+  uictrl.form,   
+  uictrl.edit,
   uidraw.windc,
   uidraw.text.windc;
 
@@ -24,6 +26,9 @@ begin
   if Def_UIControl_Edit = AControl.ControlType then
   begin
     DCFrameRect(AWinDC, AControl.BoundRect);
+
+    DCTextOut(AWinDC, AControl.BoundRect, PUIControlEdit(AControl).EditText.EditPos.EditDataNode);
+    
     exit;
   end;
   if Def_UIControl_Button = AControl.ControlType then
@@ -70,6 +75,11 @@ begin
     AUIFormWnd.ClientRect.Bottom,
     AUIFormWnd.MemDC.DCHandle, 0, 0, SRCCopy);
   EndPaint(AUIFormWnd.BaseWnd.WndHandle, tmpPaint);
+end;
+
+function UIFormWndWMEraseBkGND(AUIFormWnd: PUIFormWindow; wparam: WParam; lparam: LParam): LRESULT;
+begin
+  Result := 1;
 end;
 
 end.

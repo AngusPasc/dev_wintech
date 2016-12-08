@@ -22,6 +22,8 @@ type
   TUIControlForm    = record
     Base            : TUIBaseControl;
     Container       : TUIControlContainer;
+
+    WMCharControl   : PUIBaseControl;
   end;
 
   PUIControlPanel   = ^TUIControlPanel;

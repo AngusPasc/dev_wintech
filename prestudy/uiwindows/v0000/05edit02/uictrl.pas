@@ -28,7 +28,10 @@ type
 const
   Def_UIControl_Form    = 101;
   Def_UIControl_Panel   = 102;
+  // combine several control as a whole 
+  Def_UIControl_Group   = 103;
 
+  // single control
   Def_UIControl_Edit    = 201;
   Def_UIControl_Button  = 202;
 
