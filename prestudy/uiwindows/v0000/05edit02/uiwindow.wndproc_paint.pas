@@ -13,11 +13,36 @@ implementation
 
 uses
   uiwin.dc,
+  data.text,
   uictrl,
   uictrl.form,   
   uictrl.edit,
   uidraw.windc,
   uidraw.text.windc;
+
+procedure UIPaintUIEdit(AWinDC: PWinDC; AUIEdit: PUIControlEdit);
+var
+  tmpTextDataNode: PTextDataNodeW;
+  tmpPoint: TPoint;
+begin
+  DCFrameRect(AWinDC, AUIEdit.Base.BoundRect);
+
+  if nil <> AUIEdit.EditText.EditLine then
+  begin
+    tmpTextDataNode := AUIEdit.EditText.EditLine.FirstDataNode;
+    tmpPoint.X := AUIEdit.Base.BoundRect.Left;
+    tmpPoint.Y := AUIEdit.Base.BoundRect.Top;
+    while nil <> tmpTextDataNode do
+    begin
+      if 0 < tmpTextDataNode.Length then
+      begin
+        DCTextOut(AWinDC, tmpPoint, tmpTextDataNode);
+        tmpPoint.X := tmpPoint.X + DCTextWidth(AWinDC, tmpTextDataNode);
+      end;      
+      tmpTextDataNode := tmpTextDataNode.NextSibling;
+    end;
+  end;
+end;
 
 procedure UIPaintUIControl(AWinDC: PWinDC; AControl: PUIBaseControl);
 var
@@ -25,10 +50,7 @@ var
 begin
   if Def_UIControl_Edit = AControl.ControlType then
   begin
-    DCFrameRect(AWinDC, AControl.BoundRect);
-
-    DCTextOut(AWinDC, AControl.BoundRect, PUIControlEdit(AControl).EditText.EditPos.EditDataNode);
-    
+    UIPaintUIEdit(AWinDC, PUIControlEdit(AControl));
     exit;
   end;
   if Def_UIControl_Button = AControl.ControlType then
