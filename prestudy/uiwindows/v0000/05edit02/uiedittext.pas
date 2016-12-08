@@ -110,8 +110,23 @@ procedure EditTextBackspace(AEditText: PUIEditText);
 begin 
   if 0 < AEditText.EditPos.NodePos  then
   begin
-    // move data 
-    AEditText.EditPos.EditDataNode.Length := AEditText.EditPos.EditDataNode.Length - 1;
+    // move data
+    if nil <> AEditText.EditPos.EditDataNode then
+    begin
+      if 0 < AEditText.EditPos.EditDataNode.Length then
+      begin
+        AEditText.EditPos.EditDataNode.Length := AEditText.EditPos.EditDataNode.Length - 1;
+        AEditText.EditPos.NodePos := AEditText.EditPos.NodePos - 1;
+      end;
+      if 0 = AEditText.EditPos.EditDataNode.Length then
+      begin
+        if nil <> AEditText.EditPos.EditDataNode.PrevSibling then
+        begin
+          AEditText.EditPos.EditDataNode := AEditText.EditPos.EditDataNode.PrevSibling;
+          AEditText.EditPos.NodePos := AEditText.EditPos.EditDataNode.Length;
+        end;
+      end;
+    end;
   end;
 end;
 
