@@ -3,18 +3,21 @@ unit uiview_shape;
 interface
 
 uses
+  data.text,
   uiview_space;
 
 type
   PUIViewShape_Rect = ^TUIViewShape_Rect;
-  TUIViewShape_Rect = record
+  TUIViewShape_Rect = packed record
     BaseShape       : TUIViewShape;
   end;
 
   PUIViewShape_Text = ^TUIViewShape_Text;
-  TUIViewShape_Text = record
+  TUIViewShape_Text = packed record
     BaseShape       : TUIViewShape;
-    UITextData      : WideString;            
+    TextDataNode    : PTextDataNodeW;
+    TextPos         : Byte;
+    TextLength      : Byte;
   end;
 
   function CheckOutShapeRect: PUIViewShape_Rect;   

@@ -21,13 +21,18 @@ type
     Style           : DWORD;
     ExStyle         : DWORD;
     WindowRect      : TRect;
+    // include border client rect
     ClientRect      : TRect;
+    
     //Parent          : PWndUI;
     WndThread       : TWndThread;
     //WinThread       : PSysWinThread;
     WMMOUSEMOVE_LParam    : DWORD;
     WMLBUTTONDOWN_LParam  : DWORD;
     WMLBUTTONUP_LParam    : DWORD;
+    
+    WMRBUTTONDOWN_LParam  : DWORD;
+    WMRBUTTONUP_LParam    : DWORD;
 
     WMSetCursor_CursorPoint: TPoint;
     //WMLButtonDown_CursorPoint: TSmallPoint;
