@@ -3,7 +3,11 @@ unit uictrl;
 interface
 
 uses
-  Types;
+  Types,   
+  uiview_space,
+  uiview_shape,
+  uiview_texture
+  ;
   
 type
   PUIBaseControl    = ^TUIBaseControl;

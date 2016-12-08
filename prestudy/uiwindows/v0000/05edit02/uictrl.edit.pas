@@ -4,6 +4,9 @@ interface
                  
 uses
   uictrl,
+  uiview_space,
+  uiview_shape,
+  uiview_texture,
   uiedittext;
   
 type           
@@ -11,6 +14,14 @@ type
   TUIControlEdit    = record
     Base            : TUIBaseControl;    
     EditText        : TUIEditText;
+    // 0 == 只读
+    // 1 == 单行 Edit
+    // 65565 == 多行 Limit
+    InputLineLimit  : Word;
+    // 一行最大的字符限制
+    // ?????
+    LineCharLimit   : Word;
+    
     // FMX firemonkey design
     // Background: FMX.Objects.TRectangle;
     // Content: Tlayout;
