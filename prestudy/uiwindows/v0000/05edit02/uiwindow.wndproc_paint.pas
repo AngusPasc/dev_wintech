@@ -24,12 +24,13 @@ procedure UIPaintUIEdit(AWinDC: PWinDC; AUIEdit: PUIControlEdit);
 var
   tmpTextDataNode: PTextDataNodeW;
   tmpPoint: TPoint;
+  tmpLineNode: PTextLineNode;
 begin
   DCFrameRect(AWinDC, AUIEdit.Base.BoundRect);
 
-  if nil <> AUIEdit.EditText.EditLine then
+  if nil <> AUIEdit.EditText.TextLine then
   begin
-    tmpTextDataNode := AUIEdit.EditText.EditLine.FirstDataNode;
+    tmpTextDataNode := AUIEdit.EditText.TextLine.FirstDataNode;
     tmpPoint.X := AUIEdit.Base.BoundRect.Left;
     tmpPoint.Y := AUIEdit.Base.BoundRect.Top;
     while nil <> tmpTextDataNode do
@@ -40,6 +41,29 @@ begin
         tmpPoint.X := tmpPoint.X + DCTextWidth(AWinDC, tmpTextDataNode);
       end;      
       tmpTextDataNode := tmpTextDataNode.NextSibling;
+    end;
+  end else
+  begin             
+    tmpPoint.X := AUIEdit.Base.BoundRect.Left;
+    tmpPoint.Y := AUIEdit.Base.BoundRect.Top;
+    
+    tmpLineNode := AUIEdit.EditText.TextLines.FirstLineNode;
+    while nil <> tmpLineNode do
+    begin                    
+      tmpTextDataNode := tmpLineNode.TextLine.FirstDataNode;  
+      while nil <> tmpTextDataNode do
+      begin
+        if 0 < tmpTextDataNode.Length then
+        begin
+          DCTextOut(AWinDC, tmpPoint, tmpTextDataNode);
+          tmpPoint.X := tmpPoint.X + DCTextWidth(AWinDC, tmpTextDataNode);
+        end;
+        tmpTextDataNode := tmpTextDataNode.NextSibling;
+      end;                
+      tmpPoint.X := AUIEdit.Base.BoundRect.Left;
+      tmpPoint.Y := tmpPoint.Y + 20;
+      
+      tmpLineNode := tmpLineNode.NextSibling;
     end;
   end;
 end;

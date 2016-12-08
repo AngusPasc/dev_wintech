@@ -34,18 +34,49 @@ type
     LastLineNode  : PTextLineNode;
   end;
                  
-  function CheckOutTextLine: PTextLine;
+  function CheckOutTextLine(ATextLines: PTextLines = nil): PTextLine; overload;
   function CheckOutTextDataNode: PTextDataNodeW;
-                                
+
   procedure InsertTextDataNode(ATextLine: PTextLine; ADataNode, APositionDataNode: PTextDataNodeW);  
   procedure RemoveTextDataNode(ATextLine: PTextLine; ADataNode: PTextDataNodeW);
 
 implementation
 
-function CheckOutTextLine: PTextLine;
+function CheckOutTextLineNode(ATextLines: PTextLines): PTextLineNode;
 begin
+  Result := System.New(PTextLineNode);
+  FillChar(Result^, SizeOf(TTextLineNode), 0);
+  if nil = ATextLines.FirstLineNode then
+    ATextLines.FirstLineNode := Result;
+  if nil <> ATextLines.LastLineNode then
+  begin
+    Result.PrevSibling := ATextLines.LastLineNode;
+    ATextLines.LastLineNode.NextSibling := Result;
+  end;
+  ATextLines.LastLineNode := Result;
+end;
+
+function CheckOutTextLine(ATextLines: PTextLines = nil): PTextLine;
+begin                 
   Result := System.New(PTextLine);
   FillChar(Result^, SizeOf(TTextLine), 0);
+  if nil <> ATextLines then
+  begin
+    if (nil = ATextLines.LastLineNode) then
+    begin
+      ATextLines.FirstLineNode := System.New(PTextLineNode);
+      FillChar(ATextLines.FirstLineNode^, SizeOf(TTextLineNode), 0);
+      ATextLines.LastLineNode := ATextLines.FirstLineNode;
+      ATextLines.FirstLineNode.TextLine := Result;
+    end else
+    begin
+      ATextLines.LastLineNode.NextSibling := System.New(PTextLineNode);
+      ATextLines.LastLineNode.NextSibling.PrevSibling := ATextLines.LastLineNode;
+      ATextLines.LastLineNode := ATextLines.LastLineNode.NextSibling;
+      ATextLines.LastLineNode.NextSibling := nil;
+    end;
+    ATextLines.LastLineNode.TextLine := Result;
+  end;
 end;
 
 function CheckOutTextDataNode: PTextDataNodeW;

@@ -41,14 +41,10 @@ begin
   Result := UIFormWndProcW(@UIWindow_Test1.FormWindow, AWnd, AMsg, wParam, lParam);
 end;
 
-procedure CreateUIWindow1(AUIWindow: PUIWinTest);
-var
-  tmpRegWndClass: TWndClassW;
-  tmpCheckWndClass: TWndClassW;
-  tmpIsRegistered: Boolean;
-begin                      
+procedure CreateUIWindow1Control(AUIWindow: PUIWinTest);
+begin
   AUIWindow.FormWindow.Form := CheckOutUIForm;
-  
+
   AUIWindow.TestEdit := CheckOutUIEdit;
   AUIWindow.TestEdit.Base.BoundRect.Left := 30;
   AUIWindow.TestEdit.Base.BoundRect.Top := 55;
@@ -68,28 +64,14 @@ begin
   AUIWindow.TestButton.Base.BoundRect.Bottom := AUIWindow.TestButton.Base.BoundRect.Top + 23;
 
   UIControlAdd(@AUIWindow.TestButton.Base, @AUIWindow.FormWindow.Form.Base);
+end;
 
-  
-//  FillChar(EditTextTest, SizeOf(EditTextTest), 0);
-//  EditTextTest.EditLine := CheckOutTextLine;
-//
-//  EditTextAdd(@EditTextTest, 'A');
-//  EditTextAdd(@EditTextTest, 'B');
-//  EditTextAdd(@EditTextTest, 'C');
-//  EditTextAdd(@EditTextTest, 'D');
-//
-//  EditTextAdd(@EditTextTest, 'E');
-//  EditTextAdd(@EditTextTest, 'F');
-//  EditTextAdd(@EditTextTest, 'G');
-//  EditTextAdd(@EditTextTest, 'H');
-//  
-//  EditTextAdd(@EditTextTest, 'I');
-//  EditTextAdd(@EditTextTest, 'J');   
-//  EditTextAdd(@EditTextTest, 'K');
-//
-//  if 0 = EditTextTest.EditPos.LinePos then
-//  begin
-//  end;
+procedure CreateUIWindow1Wnd(AUIWindow: PUIWinTest);    
+var
+  tmpRegWndClass: TWndClassW;
+  tmpCheckWndClass: TWndClassW;
+  tmpIsRegistered: Boolean;
+begin
 
   FillChar(tmpRegWndClass, SizeOf(tmpRegWndClass), 0);
   tmpRegWndClass.lpfnWndProc := @UIWndProcW;
@@ -142,6 +124,12 @@ begin
       DispatchMessage(AUIWindow.FormWindow.BaseWnd.WndMsg);
     end;
   end;
+end;
+
+procedure CreateUIWindow1(AUIWindow: PUIWinTest);
+begin
+  CreateUIWindow1Control(AUIWindow);   
+  CreateUIWindow1Wnd(AUIWindow);
 end;
 
 end.
