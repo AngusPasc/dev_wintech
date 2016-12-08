@@ -23,7 +23,9 @@ type
     Base            : TUIBaseControl;
     Container       : TUIControlContainer;
 
-    WMCharControl   : PUIBaseControl;
+    WMKeyControl    : PUIBaseControl;
+    // ???
+    //WMCharControl   : PUIBaseControl;
   end;
 
   PUIControlPanel   = ^TUIControlPanel;

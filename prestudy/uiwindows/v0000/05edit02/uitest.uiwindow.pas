@@ -53,7 +53,7 @@ begin
   AUIWindow.TestEdit.Base.BoundRect.Left := 30;
   AUIWindow.TestEdit.Base.BoundRect.Top := 55;
 
-  AUIWindow.FormWindow.Form.WMCharControl := @AUIWindow.TestEdit.Base;
+  AUIWindow.FormWindow.Form.WMKeyControl := @AUIWindow.TestEdit.Base;
 
   AUIWindow.TestEdit.Base.BoundRect.Right := AUIWindow.TestEdit.Base.BoundRect.Left + 100;
   AUIWindow.TestEdit.Base.BoundRect.Bottom := AUIWindow.TestEdit.Base.BoundRect.Top + 23;
