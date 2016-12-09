@@ -2,8 +2,11 @@ unit data.text;
 
 interface
 
-type
-  PTextDataNodeW  = ^TTextDataNodeW;    
+type                               
+  PTextData       = ^TTextData;
+  PTextDataNodeW  = ^TTextDataNodeW; 
+  PTextDataPtrNodeW = ^TTextDataPtrNodeW;
+     
   PTextLine       = ^TTextLine;   
   PTextLineNode   = ^TTextLineNode;
   PTextLines      = ^TTextLines;
@@ -11,14 +14,35 @@ type
   TTextDataNodeW  = packed record
     PrevSibling   : PTextDataNodeW;
     NextSibling   : PTextDataNodeW;
-    Size          : Byte;
-    Length        : Byte;
+    Size          : Word;
+    Length        : Word;
     Data          : array[0..8 - 1] of WideChar;
   end;
+                    
+  TTextDataNodeW_64K  = packed record
+    PrevSibling   : PTextDataNodeW;
+    NextSibling   : PTextDataNodeW;
+    Size          : Word;
+    Length        : Word;
+    Data          : array[0..65565 - 1] of WideChar;
+  end;
 
+  TTextData       = packed record
+    Data          : array[0..255] of WideChar;
+  end;
+
+  TTextDataPtrNodeW = packed record
+    PrevSibling   : PTextDataPtrNodeW;
+    NextSibling   : PTextDataPtrNodeW;  
+    Size          : Word;
+    Length        : Word;    
+    PData         : PTextData;
+  end;
+  
   TTextLine       = packed record
     FirstDataNode : PTextDataNodeW;
     LastDataNode  : PTextDataNodeW;
+    //NodeCount     : Word;
     Size          : LongWord;
     Length        : LongWord;
   end;
@@ -34,9 +58,16 @@ type
     FirstLineNode : PTextLineNode;
     LastLineNode  : PTextLineNode;
   end;
-                 
+
+  function CheckOutTextDataNode: PTextDataNodeW;     
+  procedure CheckInTextDataNode(ATextDataNode: PTextDataNodeW);
+  
   function CheckOutTextLine(ATextLines: PTextLines = nil): PTextLine; overload;
-  function CheckOutTextDataNode: PTextDataNodeW;
+  procedure PackTextLine(ATextLine: PTextLine);
+
+  function CheckOutTextLineNode(ATextLines: PTextLines): PTextLineNode;
+  procedure CheckInTextLineNode(ATextLines: PTextLines; ATextLineNode: PTextLineNode);
+
 
   procedure InsertTextDataNode(ATextLine: PTextLine; ADataNode, APositionDataNode: PTextDataNodeW);  
   procedure RemoveTextDataNode(ATextLine: PTextLine; ADataNode: PTextDataNodeW);
@@ -55,6 +86,11 @@ begin
     ATextLines.LastLineNode.NextSibling := Result;
   end;
   ATextLines.LastLineNode := Result;
+end;
+
+procedure CheckInTextLineNode(ATextLines: PTextLines; ATextLineNode: PTextLineNode);
+begin
+
 end;
 
 function CheckOutTextLine(ATextLines: PTextLines = nil): PTextLine;
@@ -81,11 +117,35 @@ begin
   end;
 end;
 
+procedure PackTextLine(ATextLine: PTextLine);
+var
+  tmpDataNode: PTextDataNodeW;
+  tmpNewDataNode: PTextDataNodeW;
+  tmpPos: integer;  
+begin
+  //if 1 < ATextLine.NodeCount then
+  begin
+    //ATextLine.Size
+    tmpPos := 0;
+    tmpNewDataNode := nil;
+    tmpDataNode := ATextLine.FirstDataNode;
+    while nil <> tmpDataNode do
+    begin
+      Move(tmpDataNode.Data[0], tmpNewDataNode.Data[tmpPos], tmpDataNode.Length);
+      tmpDataNode := tmpDataNode.NextSibling;
+    end;
+  end;
+end;
+
 function CheckOutTextDataNode: PTextDataNodeW;
 begin
   Result := System.New(PTextDataNodeW);
   FillChar(Result^, SizeOf(TTextDataNodeW), 0);
   Result.Size := SizeOf(Result.Data) div SizeOf(WideChar);
+end;
+
+procedure CheckInTextDataNode(ATextDataNode: PTextDataNodeW);
+begin
 end;
 
 procedure InsertTextDataNode(ATextLine: PTextLine; ADataNode, APositionDataNode: PTextDataNodeW);

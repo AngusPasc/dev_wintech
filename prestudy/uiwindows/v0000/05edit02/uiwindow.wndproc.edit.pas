@@ -71,6 +71,73 @@ begin
     EditTextDelete(@AUIEdit.EditText);
     exit;
   end;
+  if VK_INSERT = wParam then
+  begin
+    exit;
+  end;
+  if VK_LEFT = wParam then
+  begin
+    exit;
+  end;
+  if VK_Right = wParam then
+  begin
+    exit;
+  end;
+  if VK_Up = wParam then
+  begin
+    exit;
+  end;
+  if VK_Down = wParam then
+  begin
+    exit;
+  end;   
+  if VK_Home = wParam then
+  begin
+    exit;
+  end;
+  if VK_End = wParam then
+  begin
+    exit;
+  end;        
+  // page up    
+  if VK_PRIOR = wParam then // 33
+  begin
+    exit;
+  end;
+  // page down
+  if VK_NEXT = wParam then // 34
+  begin
+    exit;
+  end;
+  if VK_CAPITAL = wParam then
+  begin
+    // A - a switch
+    exit;
+  end;        
+  if VK_SHIFT = wParam then
+  begin
+    exit;
+  end;
+  if VK_CONTROL = wParam then // 17
+  begin
+    exit;
+  end;
+  if VK_LWIN = wParam then
+  begin
+    exit;
+  end;
+  if VK_RWIN = wParam then
+  begin
+    exit;
+  end;
+  if VK_APPS = wParam then
+  begin
+    exit;
+  end;
+  if VK_F12 = wParam then
+  begin
+    exit;
+  end;
 end;
 
 procedure UIEdit_WndProc_WMKeyUp(AUIEdit: PUIControlEdit; wparam: WPARAM; lparam: LPARAM);
