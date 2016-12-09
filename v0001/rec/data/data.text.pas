@@ -29,7 +29,8 @@ type
     TextLine      : PTextLine;
   end;
 
-  TTextLines      = packed record
+  TTextLines      = packed record   
+    NodeCount     : LongWord;   
     FirstLineNode : PTextLineNode;
     LastLineNode  : PTextLineNode;
   end;
@@ -75,7 +76,8 @@ begin
       ATextLines.LastLineNode := ATextLines.LastLineNode.NextSibling;
       ATextLines.LastLineNode.NextSibling := nil;
     end;
-    ATextLines.LastLineNode.TextLine := Result;
+    ATextLines.LastLineNode.TextLine := Result;  
+    Inc(ATextLines.NodeCount);
   end;
 end;
 

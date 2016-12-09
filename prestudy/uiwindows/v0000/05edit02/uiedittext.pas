@@ -15,7 +15,8 @@ type
   PUIEditText       = ^TUIEditText;     
   
   TUIEditTextPos    = packed record
-    EditLine        : PTextLine;     
+    EditLine        : PTextLine;
+    EditLineNode    : PTextLineNode;         
     LinePos         : Integer;
     EditDataNode    : PTextDataNodeW;
     NodePos         : Byte;
@@ -52,6 +53,7 @@ begin
   else
     AEditText.TextLine := nil;
   AEditText.EditPos.EditLine := Result;
+  AEditText.EditPos.EditLineNode := AEditText.TextLines.LastLineNode;
   AEditText.EditPos.EditDataNode := nil;    
 end;
 
@@ -127,18 +129,46 @@ begin
 end;
 
 procedure EditTextBackspace(AEditText: PUIEditText);
-begin 
-  if 0 < AEditText.EditPos.NodePos  then
+begin
+  if 1 > AEditText.LineCount then
+    exit;
+  // find edit line
+  while (nil <> AEditText.EditPos.EditLine) and (1 > AEditText.EditPos.LinePos) do
   begin
-    // move data
-    if nil <> AEditText.EditPos.EditDataNode then
+    if (nil <> AEditText.EditPos.EditLineNode) then
     begin
-      if 0 < AEditText.EditPos.EditDataNode.Length then
+      if nil = AEditText.EditPos.EditLineNode.PrevSibling then
       begin
-        AEditText.EditPos.EditDataNode.Length := AEditText.EditPos.EditDataNode.Length - 1;
-        AEditText.EditPos.NodePos := AEditText.EditPos.NodePos - 1;
+        Break;
+      end else
+      begin
+        AEditText.EditPos.EditLineNode := AEditText.EditPos.EditLineNode.PrevSibling;
+        if nil <> AEditText.EditPos.EditLineNode then
+        begin
+          // delete one row ???
+          AEditText.EditPos.EditLine := AEditText.EditPos.EditLineNode.TextLine;
+          AEditText.EditPos.LinePos := AEditText.EditPos.EditLine.Length;
+          AEditText.EditPos.EditDataNode := AEditText.EditPos.EditLine.LastDataNode;
+          AEditText.EditPos.NodePos := AEditText.EditPos.EditDataNode.Length;
+
+          AEditText.LineCount := AEditText.LineCount - 1;
+
+          exit;
+        end else
+        begin
+          AEditText.EditPos.EditLine := nil;
+          AEditText.EditPos.LinePos := 0;
+        end;
       end;
-      if 0 = AEditText.EditPos.EditDataNode.Length then
+    end;
+  end;             
+  // find edit line node  
+  if nil <> AEditText.EditPos.EditLine then
+  begin
+    if 0 <AEditText.EditPos.LinePos then
+    begin      
+      while (nil <> AEditText.EditPos.EditDataNode) and
+            (1 > AEditText.EditPos.EditDataNode.Length) do
       begin
         if nil <> AEditText.EditPos.EditDataNode.PrevSibling then
         begin
@@ -146,7 +176,18 @@ begin
           AEditText.EditPos.NodePos := AEditText.EditPos.EditDataNode.Length;
         end;
       end;
-    end;
+      
+      // move data
+      if nil <> AEditText.EditPos.EditDataNode then
+      begin
+        if 0 < AEditText.EditPos.EditDataNode.Length then
+        begin
+          AEditText.EditPos.EditDataNode.Length := AEditText.EditPos.EditDataNode.Length - 1;
+          AEditText.EditPos.NodePos := AEditText.EditPos.NodePos - 1;
+          AEditText.EditPos.LinePos := AEditText.EditPos.LinePos - 1;
+        end;
+      end;
+    end;    
   end;
 end;
 

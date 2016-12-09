@@ -52,6 +52,9 @@ begin
       exit;
     end;
     AUIEdit.EditText.EditPos.EditLine := CheckOutEditTextLine(@AUIEdit.EditText);
+    AUIEdit.EditText.EditPos.EditDataNode := nil;
+    AUIEdit.EditText.EditPos.LinePos := 0;
+    AUIEdit.EditText.EditPos.NodePos := 0;
     exit;
   end;        
   if VK_TAB = wParam then // #9
