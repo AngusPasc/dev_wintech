@@ -19,7 +19,8 @@ type
 
     function GetFileName(ADataType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString; virtual;
     function GetFileExt(ADataType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString; virtual;
-    
+             
+    function GetFileUrl(ADBType, ADataType: integer; ADataSrc: integer): WideString; overload; virtual;
     function GetFileUrl(ADBType, ADataType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString; overload; virtual;
     function GetFileUrl(ADBType, ADataType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString; overload; virtual;
 
@@ -34,6 +35,11 @@ implementation
 function TBasePath.GetDataBasePath(ADBType, ADataType: integer; ADataSrc: integer): WideString;
 begin
   Result := '';
+end;
+
+function TBasePath.GetFileUrl(ADBType, ADataType: integer; ADataSrc: integer): WideString;
+begin
+  Result := GetFileUrl(ADBType, ADataType, ADataSrc, 0, nil);
 end;
 
 function TBasePath.GetFileUrl(ADBType, ADataType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString;
