@@ -27,7 +27,6 @@ type
   end;
 
   TSQLite3Statement = class;
-  TSQLite3BlobHandler = class;
 
   // Busy处理模式
   // bmAuto：自动，主线程为 bmOpenAlway，子线程为 bmOpenClose
@@ -68,8 +67,6 @@ type
     function LastInsertRowID: Int64;
     function LastChanges: Integer;
     function Prepare(const SQL: WideString): TSQLite3Statement;
-    function BlobOpen(const Table, Column: WideString; const RowID: Int64; const WriteAccess: Boolean = True): TSQLite3BlobHandler;
-    function BlobOpenStream(const Table, Column: WideString; const RowID: Int64; const WriteAccess: Boolean = True; BusyMode: TSQLite3BusyMode = bmAuto): TStream; //TSQLite3BlobStream;
     function IndexStatement(Statement: TSQLite3Statement): Integer;
 
     procedure BeginTransaction;
@@ -143,24 +140,6 @@ type
     property OwnerDatabase: TSQLite3Database read FOwnerDatabase;
   end;
 
-  { TSQLite3BlobHandler class }
-
-  TSQLite3BlobHandler = class(TObject)
-  public
-    FHandle: PSQLite3Blob;
-    FOwnerDatabase: TSQLite3Database;
-  public
-    constructor Create(OwnerDatabase: TSQLite3Database; const Table, Column: WideString; const RowID: Int64; const WriteAccess: Boolean = True);
-    destructor Destroy; override;
-
-    function Bytes: Integer;
-    procedure Read(Buffer: Pointer; const Size, Offset: Integer);
-    procedure Write(Buffer: Pointer; const Size, Offset: Integer);
-
-    property Handle: PSQLite3Blob read FHandle;
-    property OwnerDatabase: TSQLite3Database read FOwnerDatabase;
-  end;
-
 var
   SQLiteLogError: procedure(ALog: string);
   SQLiteLogErrorFormat: procedure(const format: string; const args: array of const);
@@ -179,8 +158,7 @@ implementation
 
 {$IFDEF MSWINDOWS}
 uses
-  SQLite3Utils,
-  SQLite3WrapBlob;
+  SQLite3Utils;
 
 resourcestring
   SErrorMessage = 'SQLite3 error: %s';
@@ -227,18 +205,6 @@ begin
       SQLiteLogError('SQLite: Transaction is already open.');
 //    raise ESQLite3Error.Create(STransactionAlreadyOpen);
   end;
-end;
-
-function TSQLite3Database.BlobOpen(const Table, Column: WideString;
-  const RowID: Int64; const WriteAccess: Boolean): TSQLite3BlobHandler;
-begin
-  Result := TSQLite3BlobHandler.Create(Self, Table, Column, RowID, WriteAccess);
-end;
-
-function TSQLite3Database.BlobOpenStream(const Table, Column: WideString;
-  const RowID: Int64; const WriteAccess: Boolean; BusyMode: TSQLite3BusyMode): TStream; //TSQLite3BlobStream;
-begin
-  Result := TSQLite3BlobStream.Create(Self, Table, Column, RowID, WriteAccess, BusyMode);
 end;
 
 function TSQLite3Database.Check(const ErrCode: Integer; CheckCode: Integer): Boolean;
@@ -295,10 +261,16 @@ begin
       TSQLite3Statement(FStatementList[I]).Free;
     // Delete all blob handlers
     for I := FBlobHandlerList.Count - 1 downto 0 do
-      TSQLite3BlobHandler(FBlobHandlerList[I]).Free;
+    begin
+      //TSQLite3BlobHandler(FBlobHandlerList[I]).Free;
+      TObject(FBlobHandlerList[I]).Free;
+    end;
     // Delete all blob writestreams
     for I := FBlobStreamList.Count - 1 downto 0 do
-      TSQLite3BlobStream(FBlobStreamList[I]).Free;
+    begin
+      //TSQLite3BlobStream(FBlobStreamList[I]).Free;
+      TObject(FBlobStreamList[I]).Free;
+    end;
       
     _sqlite3_close(FHandle);
     FHandle := nil;
@@ -766,44 +738,6 @@ procedure TSQLite3Statement.BindZeroBlob(const ParamName: WideString;
   const Size: Integer);
 begin
   BindZeroBlob(ParamIndexByName(ParamName), Size);
-end;
-
-{ TSQLite3BlobHandler }
-
-function TSQLite3BlobHandler.Bytes: Integer;
-begin
-  Result := _sqlite3_blob_bytes(FHandle);
-end;
-
-constructor TSQLite3BlobHandler.Create(OwnerDatabase: TSQLite3Database; const Table,
-  Column: WideString; const RowID: Int64; const WriteAccess: Boolean);
-begin
-  FOwnerDatabase := OwnerDatabase;
-  FOwnerDatabase.CheckHandle;
-  FOwnerDatabase.Check(
-    _sqlite3_blob_open(FOwnerDatabase.FHandle, 'main', PAnsiChar(StrToUTF8(Table)),
-      PAnsiChar(StrToUTF8(Column)), RowID, Ord(WriteAccess), FHandle)
-  );
-  FOwnerDatabase.FBlobHandlerList.Add(Self);
-end;
-
-destructor TSQLite3BlobHandler.Destroy;
-begin
-  FOwnerDatabase.FBlobHandlerList.Remove(Self);
-  _sqlite3_blob_close(FHandle);
-  inherited;
-end;
-
-procedure TSQLite3BlobHandler.Read(Buffer: Pointer; const Size,
-  Offset: Integer);
-begin
-  FOwnerDatabase.Check(_sqlite3_blob_read(FHandle, Buffer, Size, Offset));
-end;
-
-procedure TSQLite3BlobHandler.Write(Buffer: Pointer; const Size,
-  Offset: Integer);
-begin
-  FOwnerDatabase.Check(_sqlite3_blob_write(FHandle, Buffer, Size, Offset));
 end;
 
 { ESQLite3Error }

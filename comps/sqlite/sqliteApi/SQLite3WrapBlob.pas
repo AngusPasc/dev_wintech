@@ -42,7 +42,29 @@ type
     procedure Reopen;
     property BusyMode: TSQLite3BusyMode read FBusyMode write SetBusyMode;
   end;
-             
+
+
+  { TSQLite3BlobHandler class }
+
+  TSQLite3BlobHandler = class(TObject)
+  public
+    FHandle: PSQLite3Blob;
+    FOwnerDatabase: TSQLite3Database;
+  public
+    constructor Create(OwnerDatabase: TSQLite3Database; const Table, Column: WideString; const RowID: Int64; const WriteAccess: Boolean = True);
+    destructor Destroy; override;
+
+    function Bytes: Integer;
+    procedure Read(Buffer: Pointer; const Size, Offset: Integer);
+    procedure Write(Buffer: Pointer; const Size, Offset: Integer);
+
+    property Handle: PSQLite3Blob read FHandle;
+    property OwnerDatabase: TSQLite3Database read FOwnerDatabase;
+  end;
+
+  function BlobOpen(ASQLite3DB: TSQLite3Database; const Table, Column: WideString; const RowID: Int64; const WriteAccess: Boolean = True): TSQLite3BlobHandler;
+  function BlobOpenStream(ASQLite3DB: TSQLite3Database; const Table, Column: WideString; const RowID: Int64; const WriteAccess: Boolean = True; BusyMode: TSQLite3BusyMode = bmAuto): TStream; //TSQLite3BlobStream;
+
 {$ENDIF}
 
 implementation
@@ -51,8 +73,59 @@ implementation
 
 uses
   SQLite3Utils;
+
+  
+function BlobOpenStream(ASQLite3DB: TSQLite3Database; const Table, Column: WideString;
+  const RowID: Int64; const WriteAccess: Boolean; BusyMode: TSQLite3BusyMode): TStream; //TSQLite3BlobStream;
+begin
+  Result := TSQLite3BlobStream.Create(ASQLite3DB, Table, Column, RowID, WriteAccess, BusyMode);
+end;
+
+{ TSQLite3BlobHandler }
+
+function TSQLite3BlobHandler.Bytes: Integer;
+begin
+  Result := _sqlite3_blob_bytes(FHandle);
+end;
+
+constructor TSQLite3BlobHandler.Create(OwnerDatabase: TSQLite3Database; const Table,
+  Column: WideString; const RowID: Int64; const WriteAccess: Boolean);
+begin
+  FOwnerDatabase := OwnerDatabase;
+  FOwnerDatabase.CheckHandle;
+  FOwnerDatabase.Check(
+    _sqlite3_blob_open(FOwnerDatabase.FHandle, 'main', PAnsiChar(StrToUTF8(Table)),
+      PAnsiChar(StrToUTF8(Column)), RowID, Ord(WriteAccess), FHandle)
+  );
+  FOwnerDatabase.FBlobHandlerList.Add(Self);
+end;
+
+destructor TSQLite3BlobHandler.Destroy;
+begin
+  FOwnerDatabase.FBlobHandlerList.Remove(Self);
+  _sqlite3_blob_close(FHandle);
+  inherited;
+end;
+
+procedure TSQLite3BlobHandler.Read(Buffer: Pointer; const Size,
+  Offset: Integer);
+begin
+  FOwnerDatabase.Check(_sqlite3_blob_read(FHandle, Buffer, Size, Offset));
+end;
+
+procedure TSQLite3BlobHandler.Write(Buffer: Pointer; const Size,
+  Offset: Integer);
+begin
+  FOwnerDatabase.Check(_sqlite3_blob_write(FHandle, Buffer, Size, Offset));
+end;
   
 { TSQLite3BlobStream }
+
+function BlobOpen(ASQLite3DB: TSQLite3Database; const Table, Column: WideString;
+  const RowID: Int64; const WriteAccess: Boolean): TSQLite3BlobHandler;
+begin
+  Result := TSQLite3BlobHandler.Create(ASQLite3DB, Table, Column, RowID, WriteAccess);
+end;
 
 constructor TSQLite3BlobStream.Create(OwnerDatabase: TSQLite3Database;
   const Table, Column: WideString; const RowID: Int64;
