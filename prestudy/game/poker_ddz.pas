@@ -5,6 +5,7 @@ interface
 { doudizhu }
 
 uses
+  define_card,
   define_Poker;
 
 (*
@@ -51,8 +52,6 @@ uses
 
 *)
 const
-  FirstCardIndex = 1;
-
   DDZRoundStep_Shuffle  = 1;
   DDZRoundStep_Dealing  = 2;
   DDZRoundStep_Hog      = 3;
@@ -133,7 +132,7 @@ type
   TDDZRoundSession  = packed record
     SessionStep     : Byte;
     TurnSeat        : Byte; // it turn to some one play card
-    //Cards_Poker1    : PCards_Poker1;
+    Cards_Poker     : PCards_Poker1;
   end;
   
   // 发消息的时候 就可以排好序发

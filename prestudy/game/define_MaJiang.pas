@@ -106,7 +106,7 @@ type
   PCards_Mj     = ^TCards_Mj;
   TCards_Mj     = packed record
     CardCount   : Byte;
-    Card        : array[1..152] of TCardRecord;
+    Card        : array[FirstCardIndex..FirstCardIndex + 151] of TCardRecord;
   end;
                          
   function CheckOutCards_Mj: PCards_Mj;

@@ -34,7 +34,8 @@ type
     procedure btnPlayer3Click(Sender: TObject);
   private
     { Private declarations }
-    fFormData_WinGame: TFormData_WinGame;
+    fFormData_WinGame: TFormData_WinGame;     
+    procedure LogCards(ACards: PCards);
   public
     { Public declarations }
     constructor Create(Owner: TComponent); override;
@@ -79,29 +80,35 @@ begin
   end;
 end;
 
-procedure TfrmWinGame.btnPokerTestClick(Sender: TObject);
+procedure TfrmWinGame.LogCards(ACards: PCards); 
 var
   i: integer;
   tmpStr: string;
+begin
+  mmo1.lines.BeginUpdate;
+  try
+    mmo1.lines.Clear;        
+    for i := FirstCardIndex to FirstCardIndex + ACards.CardCount - 1 do
+    begin
+      tmpStr := IntToStr(i) + ':' + IntToStr(ACards.Card[i].CardId) + #9;
+      tmpStr := tmpStr + '[' + GetPokerCaption(ACards.Card[i].CardId) + ']';
+      tmpStr := tmpStr + '/' + #32#32#32 + IntToStr(ACards.Card[i].CardPos);
+      mmo1.lines.Add(tmpStr);
+    end;
+  finally
+    mmo1.lines.EndUpdate;
+  end;
+end;
+
+procedure TfrmWinGame.btnPokerTestClick(Sender: TObject);
 begin
   if nil = fFormData_WinGame.Cards_Poker then
   begin
     fFormData_WinGame.Cards_Poker := CheckOutCards_Poker2;
   end;
   ShuffleCards(PCards(fFormData_WinGame.Cards_Poker));
-  mmo1.lines.BeginUpdate;
-  try
-    mmo1.lines.Clear;
-    for i := Low(fFormData_WinGame.Cards_Poker.Card) to High(fFormData_WinGame.Cards_Poker.Card) do
-    begin
-      tmpStr := IntToStr(i) + ':' + IntToStr(fFormData_WinGame.Cards_Poker.Card[i].CardId) + #9;
-      tmpStr := tmpStr + '[' + GetPokerCaption(fFormData_WinGame.Cards_Poker.Card[i].CardId) + ']';
-      tmpStr := tmpStr + '/' + #32#32#32 + IntToStr(fFormData_WinGame.Cards_Poker.Card[i].CardPos);
-      mmo1.lines.Add(tmpStr);
-    end;
-  finally
-    mmo1.lines.EndUpdate;
-  end;
+
+  LogCards(PCards(fFormData_WinGame.Cards_Poker));
 end;
 
 procedure TfrmWinGame.btnDDZ1Click(Sender: TObject);
@@ -113,6 +120,13 @@ begin
   if nil = fFormData_WinGame.DDZRoundSession then
   begin
     fFormData_WinGame.DDZRoundSession := CheckOutDDZRoundSession;
+  end;
+  if nil = fFormData_WinGame.DDZRoundSession.Cards_Poker then
+  begin
+    fFormData_WinGame.DDZRoundSession.Cards_Poker := CheckOutCards_Poker1;
+    InitCards(PCards(fFormData_WinGame.DDZRoundSession.Cards_Poker));
+    ShuffleCards(PCards(fFormData_WinGame.DDZRoundSession.Cards_Poker));
+    LogCards(PCards(fFormData_WinGame.DDZRoundSession.Cards_Poker));
   end;
 end;
 
