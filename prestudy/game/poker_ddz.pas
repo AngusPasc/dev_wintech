@@ -53,6 +53,11 @@ uses
 const
   FirstCardIndex = 1;
 
+  DDZRoundStep_Shuffle  = 1;
+  DDZRoundStep_Dealing  = 2;
+  DDZRoundStep_Hog      = 3;
+  DDZRoundStep_Round    = 4;
+      
 type
   TCardPattern = (
     patternNone,     
@@ -92,8 +97,9 @@ type
             SlaveCount  = n * 2  飞机
     patternFour     
         MasterCount = 1    
-            SlaveCount  = 1  四带一    
-            SlaveCount  = 2  四带二
+            SlaveCount  = 1  四带一  XXX 不允许  
+            SlaveCount  = 2  四带二张
+            SlaveCount  = 4  四带二对 ???
         MasterCount = 2      连四 ??? 是否允许            
     patternBomb 炸   
         MasterCount : 1    
@@ -123,14 +129,28 @@ type
     SortCards       : TPokerSortCards;
   end;
 
+  PDDZRoundSession  = ^TDDZRoundSession;
+  TDDZRoundSession  = packed record
+    SessionStep     : Byte;
+    TurnSeat        : Byte; // it turn to some one play card
+    //Cards_Poker1    : PCards_Poker1;
+  end;
+  
   // 发消息的时候 就可以排好序发
 
+  function CheckOutDDZRoundSession: PDDZRoundSession;
   function CheckCardPattern(APlayCard: PPlayCard): Boolean;
 
   // APrevPlayCard 上家出的牌
   function GetCardHint(APrevPlayCard: PPlayCard; AOutputCard: PPlayCard): Boolean;
 
 implementation
+
+function CheckOutDDZRoundSession: PDDZRoundSession;
+begin
+  Result := System.New(PDDZRoundSession);
+  FillChar(Result^, SizeOf(TDDZRoundSession), 0);
+end;
 
 function InternalCheckCardPattern_Card1(APlayCard: PPlayCard): Boolean; inline;
 begin

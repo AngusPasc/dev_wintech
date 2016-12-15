@@ -4,19 +4,37 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, utils_cards;
+  Dialogs, StdCtrls, utils_cards, ExtCtrls, define_card,
+  define_Poker, define_MaJiang, poker_ddz;
 
 type
+  TFormData_WinGame = record
+    Cards_Mj: PCards_Mj;
+    Cards_Poker: PCards_Poker2;
+    DDZRoundSession: PDDZRoundSession;
+  end;
+  
   TfrmWinGame = class(TForm)
-    btn1: TButton;
+    btnMjTest: TButton;
     mmo1: TMemo;
-    btn2: TButton;
-    procedure btn1Click(Sender: TObject);
-    procedure btn2Click(Sender: TObject);
+    btnPokerTest: TButton;
+    pnlDDZ: TPanel;
+    btnDDZ1: TButton;
+    btnPlayer1: TButton;
+    btnPlayer2: TButton;
+    btnPlayer3: TButton;
+    edtCard1: TEdit;
+    edtCard2: TEdit;
+    edtCard3: TEdit;
+    procedure btnMjTestClick(Sender: TObject);
+    procedure btnPokerTestClick(Sender: TObject);
+    procedure btnDDZ1Click(Sender: TObject);
+    procedure btnPlayer2Click(Sender: TObject);
+    procedure btnPlayer1Click(Sender: TObject);
+    procedure btnPlayer3Click(Sender: TObject);
   private
     { Private declarations }
-    fCards_Mj: PCards_Mj;       
-    fCards_Poker: PCards_Poker2;
+    fFormData_WinGame: TFormData_WinGame;
   public
     { Public declarations }
     constructor Create(Owner: TComponent); override;
@@ -29,35 +47,31 @@ implementation
 
 {$R *.dfm}
 
-uses
-  define_Poker,
-  define_MaJiang;
 
 constructor TfrmWinGame.Create(Owner: TComponent);
 begin
   inherited;
-  fCards_Mj := nil;
-  fCards_Poker := nil;
+  FillChar(fFormData_WinGame, SizeOf(fFormData_WinGame), 0);
 end;
 
-procedure TfrmWinGame.btn1Click(Sender: TObject);
+procedure TfrmWinGame.btnMjTestClick(Sender: TObject);
 var
   i: integer;
   tmpStr: string;
 begin
-  if nil = fCards_Mj then
+  if nil = fFormData_WinGame.Cards_Mj then
   begin
-    fCards_Mj := CheckOutCards_Mj;
+    fFormData_WinGame.Cards_Mj := CheckOutCards_Mj;
   end;
   //ShuffleCards(PCards(fCards_Mj));
   mmo1.lines.BeginUpdate;
   try
     mmo1.lines.Clear;
-    for i := Low(fCards_Mj.Card) to High(fCards_Mj.Card) do
+    for i := Low(fFormData_WinGame.Cards_Mj.Card) to High(fFormData_WinGame.Cards_Mj.Card) do
     begin
-      tmpStr := IntToStr(i) + ':' + IntToStr(fCards_Mj.Card[i].CardId) + #9;
-      tmpStr := tmpStr + '[' + GetMJCaption(fCards_Mj.Card[i].CardId) + ']';
-      tmpStr := tmpStr + '/' + #32#32#32 + IntToStr(fCards_Mj.Card[i].CardPos);
+      tmpStr := IntToStr(i) + ':' + IntToStr(fFormData_WinGame.Cards_Mj.Card[i].CardId) + #9;
+      tmpStr := tmpStr + '[' + GetMJCaption(fFormData_WinGame.Cards_Mj.Card[i].CardId) + ']';
+      tmpStr := tmpStr + '/' + #32#32#32 + IntToStr(fFormData_WinGame.Cards_Mj.Card[i].CardPos);
       mmo1.lines.Add(tmpStr);
     end;
   finally
@@ -65,29 +79,56 @@ begin
   end;
 end;
 
-procedure TfrmWinGame.btn2Click(Sender: TObject);
+procedure TfrmWinGame.btnPokerTestClick(Sender: TObject);
 var
   i: integer;
   tmpStr: string;
 begin
-  if nil = fCards_Poker then
+  if nil = fFormData_WinGame.Cards_Poker then
   begin
-    fCards_Poker := CheckOutCards_Poker2;
+    fFormData_WinGame.Cards_Poker := CheckOutCards_Poker2;
   end;
-  ShuffleCards(PCards(fCards_Poker));
+  ShuffleCards(PCards(fFormData_WinGame.Cards_Poker));
   mmo1.lines.BeginUpdate;
   try
     mmo1.lines.Clear;
-    for i := Low(fCards_Poker.Card) to High(fCards_Poker.Card) do
+    for i := Low(fFormData_WinGame.Cards_Poker.Card) to High(fFormData_WinGame.Cards_Poker.Card) do
     begin
-      tmpStr := IntToStr(i) + ':' + IntToStr(fCards_Poker.Card[i].CardId) + #9;
-      tmpStr := tmpStr + '[' + GetPokerCaption(fCards_Poker.Card[i].CardId) + ']';
-      tmpStr := tmpStr + '/' + #32#32#32 + IntToStr(fCards_Poker.Card[i].CardPos);
+      tmpStr := IntToStr(i) + ':' + IntToStr(fFormData_WinGame.Cards_Poker.Card[i].CardId) + #9;
+      tmpStr := tmpStr + '[' + GetPokerCaption(fFormData_WinGame.Cards_Poker.Card[i].CardId) + ']';
+      tmpStr := tmpStr + '/' + #32#32#32 + IntToStr(fFormData_WinGame.Cards_Poker.Card[i].CardPos);
       mmo1.lines.Add(tmpStr);
     end;
   finally
     mmo1.lines.EndUpdate;
   end;
+end;
+
+procedure TfrmWinGame.btnDDZ1Click(Sender: TObject);
+begin
+// DDZ Step1 -- Ï´ÅÆ
+//     Step2 -- ·¢ÅÆ
+//     Step3 -- ÇÀ×¯
+//     Step4 -- Round
+  if nil = fFormData_WinGame.DDZRoundSession then
+  begin
+    fFormData_WinGame.DDZRoundSession := CheckOutDDZRoundSession;
+  end;
+end;
+
+procedure TfrmWinGame.btnPlayer1Click(Sender: TObject);
+begin
+//
+end;
+
+procedure TfrmWinGame.btnPlayer2Click(Sender: TObject);
+begin
+//
+end;
+
+procedure TfrmWinGame.btnPlayer3Click(Sender: TObject);
+begin
+//
 end;
 
 end.

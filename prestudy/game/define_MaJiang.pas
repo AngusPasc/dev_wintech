@@ -2,6 +2,9 @@ unit define_MaJiang;
 
 interface
 
+uses
+  define_card;
+  
 {
   一副完整的麻将牌共152张
 
@@ -99,7 +102,14 @@ type
     MainClass   : TMjMainClass;
     SubPoint    : Byte;
   end;
-
+           
+  PCards_Mj     = ^TCards_Mj;
+  TCards_Mj     = packed record
+    CardCount   : Byte;
+    Card        : array[1..152] of TCardRecord;
+  end;
+                         
+  function CheckOutCards_Mj: PCards_Mj;
   function GetMJMainClass(ACardMj: Byte): TMjMainClass;
   function GetMJCaption(ACardMj: Byte): string;
   
@@ -107,6 +117,14 @@ implementation
 
 uses
   SysUtils;
+
+function CheckOutCards_Mj: PCards_Mj;
+begin
+  Result := System.New(PCards_Mj);
+  FillChar(Result^, SizeOf(TCards_Mj), 0);  
+  Result.CardCount := High(Result.Card) - Low(Result.Card) + 1;
+  //**InitCards(PCards(Result));
+end;
                 
 function GetMJMainClass(ACardMj: Byte): TMjMainClass;
 var

@@ -21,6 +21,9 @@ type
 
     procedure Sort; virtual;  
     procedure Clear; virtual;
+    
+    class function DataTypeDefine: integer; virtual; abstract;
+    
     property RecordCount: Integer read GetRecordCount;
     property RecordItem[AIndex: integer]: Pointer read GetRecordItem;
     property DBType: integer read fBaseDataSetData.DBType write fBaseDataSetData.DBType;

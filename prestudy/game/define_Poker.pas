@@ -3,6 +3,7 @@ unit define_Poker;
 interface
 
 uses
+  define_card,
   SysUtils;
   
 { 54 张牌
@@ -39,7 +40,31 @@ type
     // 
     CardStatus    : Byte;
   end;
+               
+  PCards_Poker1 = ^TCards_Poker1;
+  TCards_Poker1 = packed record
+    CardCount   : Byte;
+    Card        : array[1..54] of TCardRecord;
+  end;
+        
+  PCards_Poker2 = ^TCards_Poker2;
+  TCards_Poker2 = packed record
+    CardCount   : Byte;
+    Card        : array[1..54 * 2] of TCardRecord;
+  end;
+           
+  PCards_Poker3 = ^TCards_Poker3;
+  TCards_Poker3 = packed record
+    CardCount   : Byte;
+    Card        : array[1..54 * 3] of TCardRecord;
+  end;
 
+  PCards_Poker4 = ^TCards_Poker4;
+  TCards_Poker4 = packed record
+    CardCount   : Byte;
+    Card        : array[1..54 * 4] of TCardRecord;
+  end;
+  
 const
   CardStatus_Unknown    = 0;
   CardStatus_UnAssigned = 1;
@@ -50,7 +75,11 @@ const
   CardStatus_UserHandBase = 60; // 在用户手中
   // play card by some user
   CardStatus_IndeskBase   = 80; // 在牌桌上
-
+                         
+  function CheckOutCards_Poker1: PCards_Poker1;
+  function CheckOutCards_Poker2: PCards_Poker2;
+  function CheckOutCards_Poker3: PCards_Poker3;
+  function CheckOutCards_Poker4: PCards_Poker4; 
   function GetPokerClass(ACardPoker: Byte): TPokerClassCard;
   function GetPokerCaption(ACardPoker: Byte): string;
   
@@ -59,6 +88,38 @@ implementation
 (*
   // 初始化的时候 建张表 免得每次查 费 CPU
 *)
+
+function CheckOutCards_Poker1: PCards_Poker1;
+begin
+  Result := System.New(PCards_Poker1);
+  FillChar(Result^, SizeOf(TCards_Poker1), 0);  
+  Result.CardCount := High(Result.Card) - Low(Result.Card) + 1;    
+  //InitCards(PCards(Result));
+end;
+
+function CheckOutCards_Poker2: PCards_Poker2;
+begin
+  Result := System.New(PCards_Poker2);
+  FillChar(Result^, SizeOf(TCards_Poker2), 0);
+  Result.CardCount := High(Result.Card) - Low(Result.Card) + 1;
+  //InitCards(PCards(Result));
+end;
+
+function CheckOutCards_Poker3: PCards_Poker3;
+begin
+  Result := System.New(PCards_Poker3);
+  FillChar(Result^, SizeOf(TCards_Poker3), 0);  
+  Result.CardCount := High(Result.Card) - Low(Result.Card) + 1; 
+  //InitCards(PCards(Result));
+end;
+
+function CheckOutCards_Poker4: PCards_Poker4;
+begin
+  Result := System.New(PCards_Poker4);
+  FillChar(Result^, SizeOf(TCards_Poker4), 0);  
+  Result.CardCount := High(Result.Card) - Low(Result.Card) + 1;  
+  //InitCards(PCards(Result));
+end;
 
 function GetPokerClass(ACardPoker: Byte): TPokerClassCard;  
 var
