@@ -56,9 +56,6 @@ begin
 end;
 
 procedure TfrmWinGame.btnMjTestClick(Sender: TObject);
-var
-  i: integer;
-  tmpStr: string;
 begin
   if nil = fFormData_WinGame.Cards_Mj then
   begin
@@ -121,13 +118,57 @@ begin
   if nil = fFormData_WinGame.DDZRoundSession then
   begin
     fFormData_WinGame.DDZRoundSession := CheckOutDDZRoundSession;
-  end;
-  if nil = fFormData_WinGame.DDZRoundSession.Cards_Poker then
+    fFormData_WinGame.DDZRoundSession.SessionStep := DDZRoundStep_Shuffle;
+  end;                                               
+  if DDZRoundStep_Shuffle = fFormData_WinGame.DDZRoundSession.SessionStep then
   begin
-    fFormData_WinGame.DDZRoundSession.Cards_Poker := CheckOutCards_Poker1;
-    InitCards(PCards(fFormData_WinGame.DDZRoundSession.Cards_Poker));
-    ShuffleCards(PCards(fFormData_WinGame.DDZRoundSession.Cards_Poker));
-    LogCards(PCards(fFormData_WinGame.DDZRoundSession.Cards_Poker), 1);
+    if nil = fFormData_WinGame.DDZRoundSession.Cards_Poker then
+    begin
+      fFormData_WinGame.DDZRoundSession.Cards_Poker := CheckOutCards_Poker1;
+      InitCards(PCards(fFormData_WinGame.DDZRoundSession.Cards_Poker));
+      ShuffleCards(PCards(fFormData_WinGame.DDZRoundSession.Cards_Poker));
+      LogCards(PCards(fFormData_WinGame.DDZRoundSession.Cards_Poker), 1);
+    end;
+    fFormData_WinGame.DDZRoundSession.SessionStep := DDZRoundStep_Dealing;
+  end;
+  if DDZRoundStep_Dealing = fFormData_WinGame.DDZRoundSession.SessionStep then
+  begin
+  end;
+  if DDZRoundStep_Hog = fFormData_WinGame.DDZRoundSession.SessionStep  then
+  begin
+    // it turn to someone play card
+    if true then
+    begin
+      fFormData_WinGame.DDZRoundSession.TurnSeat := fFormData_WinGame.DDZRoundSession.ActionSeat;
+      fFormData_WinGame.DDZRoundSession.ActionSeat := fFormData_WinGame.DDZRoundSession.ActionSeat + 1;
+      fFormData_WinGame.DDZRoundSession.Multiple := fFormData_WinGame.DDZRoundSession.Multiple * 2;
+    end else
+    begin
+      fFormData_WinGame.DDZRoundSession.ActionSeat := fFormData_WinGame.DDZRoundSession.ActionSeat + 1;
+    end;
+    // set last 3 card own to some one
+  end;      
+  if DDZRoundStep_CardRound = fFormData_WinGame.DDZRoundSession.SessionStep  then
+  begin
+    if patternNone = fFormData_WinGame.DDZRoundSession.CurrentPattern.Pattern then
+    begin
+      // first turn must play card can not pass
+    end;
+    if true then
+    begin
+      fFormData_WinGame.DDZRoundSession.ActionSeat := fFormData_WinGame.DDZRoundSession.TurnSeat;
+      fFormData_WinGame.DDZRoundSession.TurnSeat := fFormData_WinGame.DDZRoundSession.TurnSeat + 1;
+    end else
+    begin
+      // pass
+      fFormData_WinGame.DDZRoundSession.TurnSeat := fFormData_WinGame.DDZRoundSession.TurnSeat + 1;
+    end;
+  end;
+  if DDZRoundStep_Settlement = fFormData_WinGame.DDZRoundSession.SessionStep  then
+  begin
+    if 1 = fFormData_WinGame.DDZRoundSession.Multiple then
+    begin
+    end;
   end;
 end;
 

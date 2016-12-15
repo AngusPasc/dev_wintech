@@ -52,11 +52,12 @@ uses
 
 *)
 const
-  DDZRoundStep_Shuffle  = 1;
-  DDZRoundStep_Dealing  = 2;
-  DDZRoundStep_Hog      = 3;
-  DDZRoundStep_Round    = 4;
-      
+  DDZRoundStep_Shuffle    = 1;
+  DDZRoundStep_Dealing    = 2;
+  DDZRoundStep_Hog        = 3;
+  DDZRoundStep_CardRound  = 4;
+  DDZRoundStep_Settlement = 5;
+
 type
   TCardPattern = (
     patternNone,     
@@ -124,14 +125,17 @@ type
   // ÊÖÅÆ
   PHandCard         = ^THandCard;        
   THandCard         = packed record
-    Cards           : array[FirstCardIndex.. FirstCardIndex +19] of TPokerPlayCard; // 4 ×Ö½Ú
+    Cards           : array[FirstCardIndex.. FirstCardIndex + 19] of TPokerPlayCard; // 4 ×Ö½Ú
     SortCards       : TPokerSortCards;
   end;
 
   PDDZRoundSession  = ^TDDZRoundSession;
   TDDZRoundSession  = packed record
     SessionStep     : Byte;
+    ActionSeat      : Byte;
     TurnSeat        : Byte; // it turn to some one play card
+    Multiple        : Byte;
+    CurrentPattern  : TPatternCard;
     Cards_Poker     : PCards_Poker1;
   end;
   
