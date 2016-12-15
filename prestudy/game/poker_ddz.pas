@@ -50,6 +50,8 @@ uses
     17 + 17 + 20 = 54
 
 *)
+const
+  FirstCardIndex = 1;
 
 type
   TCardPattern = (
@@ -100,7 +102,7 @@ type
   PPokerSortCards   = ^TPokerSortCards;
   TPokerSortCards   = packed record
     // 3, 4, 5, 6,   7, 8, 9, 10, J, Q, K, A, 2, Queen, King
-    CardPointNum    : array[1..15] of Byte;
+    CardPointNum    : array[FirstCardIndex..FirstCardIndex + 14] of Byte;
   end;
 
   // 出牌
@@ -111,13 +113,13 @@ type
     CardWeightValue : Word;  // 2   -- 4
     PatternCard     : TPatternCard;  // 4
     // 最大牌 20 张
-    Cards           : array[1..20] of TPokerPlayCard; // 4 字节
+    Cards           : array[FirstCardIndex.. FirstCardIndex + 19] of TPokerPlayCard; // 4 字节
   end;
 
   // 手牌
   PHandCard         = ^THandCard;        
   THandCard         = packed record
-    Cards           : array[1..20] of TPokerPlayCard; // 4 字节
+    Cards           : array[FirstCardIndex.. FirstCardIndex +19] of TPokerPlayCard; // 4 字节
     SortCards       : TPokerSortCards;
   end;
 
@@ -135,63 +137,63 @@ begin
   Result := true;
   APlayCard.PatternCard.Pattern := patternSingle;
   APlayCard.PatternCard.MasterCount := 1;
-  APlayCard.PatternCard.MasterStart := APlayCard.Cards[0].ClassCard.SubPoint;
+  APlayCard.PatternCard.MasterStart := APlayCard.Cards[FirstCardIndex].ClassCard.SubPoint;
 end;
 
 function InternalCheckCardPattern_Card2(APlayCard: PPlayCard): Boolean; inline;
 begin           
   Result := false;
-  if (pokerClassQueen = APlayCard.Cards[0].ClassCard.MainClass) and
-     (pokerClassKing = APlayCard.Cards[1].ClassCard.MainClass) then
+  if (pokerClassQueen = APlayCard.Cards[FirstCardIndex].ClassCard.MainClass) and
+     (pokerClassKing = APlayCard.Cards[FirstCardIndex + 1].ClassCard.MainClass) then
   begin        
     Result := true;
     APlayCard.PatternCard.Pattern := patternBomb;
     exit;
   end;
-  if (APlayCard.Cards[0].ClassCard.SubPoint = APlayCard.Cards[1].ClassCard.SubPoint) then
+  if (APlayCard.Cards[FirstCardIndex].ClassCard.SubPoint = APlayCard.Cards[FirstCardIndex + 1].ClassCard.SubPoint) then
   begin
     Result := true;
     APlayCard.PatternCard.Pattern := patternDouble;
     APlayCard.PatternCard.MasterCount := 1;
-    APlayCard.PatternCard.MasterStart := APlayCard.Cards[0].ClassCard.SubPoint;
+    APlayCard.PatternCard.MasterStart := APlayCard.Cards[FirstCardIndex].ClassCard.SubPoint;
   end;
 end;
                 
 function InternalCheckCardPattern_Card3(APlayCard: PPlayCard): Boolean; inline;
 begin
   Result := false;                       
-  if (APlayCard.Cards[0].ClassCard.SubPoint = APlayCard.Cards[1].ClassCard.SubPoint) and
-     (APlayCard.Cards[0].ClassCard.SubPoint = APlayCard.Cards[2].ClassCard.SubPoint) then
+  if (APlayCard.Cards[FirstCardIndex].ClassCard.SubPoint = APlayCard.Cards[FirstCardIndex + 1].ClassCard.SubPoint) and
+     (APlayCard.Cards[FirstCardIndex].ClassCard.SubPoint = APlayCard.Cards[FirstCardIndex + 2].ClassCard.SubPoint) then
   begin
     APlayCard.PatternCard.Pattern := patternTriple;
     APlayCard.PatternCard.MasterCount := 1;
-    APlayCard.PatternCard.MasterStart := APlayCard.Cards[0].ClassCard.SubPoint;
+    APlayCard.PatternCard.MasterStart := APlayCard.Cards[FirstCardIndex].ClassCard.SubPoint;
   end;
 end;
                              
 function InternalCheckCardPattern_Card4(APlayCard: PPlayCard): Boolean; inline;
 begin
   Result := false;                   
-  if (APlayCard.Cards[0].ClassCard.SubPoint = APlayCard.Cards[1].ClassCard.SubPoint) and
-     (APlayCard.Cards[0].ClassCard.SubPoint = APlayCard.Cards[2].ClassCard.SubPoint) and
-     (APlayCard.Cards[0].ClassCard.SubPoint = APlayCard.Cards[3].ClassCard.SubPoint) then
+  if (APlayCard.Cards[FirstCardIndex].ClassCard.SubPoint = APlayCard.Cards[FirstCardIndex + 1].ClassCard.SubPoint) and
+     (APlayCard.Cards[FirstCardIndex].ClassCard.SubPoint = APlayCard.Cards[FirstCardIndex + 2].ClassCard.SubPoint) and
+     (APlayCard.Cards[FirstCardIndex].ClassCard.SubPoint = APlayCard.Cards[FirstCardIndex + 3].ClassCard.SubPoint) then
   begin
     Result := true;
     APlayCard.PatternCard.Pattern := patternBomb;
     APlayCard.PatternCard.MasterCount := 1;
-    APlayCard.PatternCard.MasterStart := APlayCard.Cards[0].ClassCard.SubPoint;
+    APlayCard.PatternCard.MasterStart := APlayCard.Cards[FirstCardIndex].ClassCard.SubPoint;
     exit;
   end;     
-  if (APlayCard.Cards[1].ClassCard.SubPoint = APlayCard.Cards[1].ClassCard.SubPoint) then
+  if (APlayCard.Cards[FirstCardIndex + 1].ClassCard.SubPoint = APlayCard.Cards[FirstCardIndex + 2].ClassCard.SubPoint) then
   begin
-    if (APlayCard.Cards[0].ClassCard.SubPoint = APlayCard.Cards[1].ClassCard.SubPoint) then
+    if (APlayCard.Cards[FirstCardIndex].ClassCard.SubPoint = APlayCard.Cards[FirstCardIndex + 1].ClassCard.SubPoint) then
     begin
       APlayCard.PatternCard.Pattern := patternTriple;
       APlayCard.PatternCard.MasterCount := 1;
       APlayCard.PatternCard.MasterStart := APlayCard.Cards[1].ClassCard.SubPoint;
       APlayCard.PatternCard.SlaveCount := 1;     
       Result := true;
-    end else if (APlayCard.Cards[3].ClassCard.SubPoint = APlayCard.Cards[1].ClassCard.SubPoint) then
+    end else if (APlayCard.Cards[FirstCardIndex + 3].ClassCard.SubPoint = APlayCard.Cards[FirstCardIndex + 1].ClassCard.SubPoint) then
     begin
       APlayCard.PatternCard.Pattern := patternTriple;
       APlayCard.PatternCard.MasterCount := 1;
