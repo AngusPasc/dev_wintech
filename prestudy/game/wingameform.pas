@@ -35,7 +35,7 @@ type
   private
     { Private declarations }
     fFormData_WinGame: TFormData_WinGame;     
-    procedure LogCards(ACards: PCards);
+    procedure LogCards(ACards: PCards; AMode: Integer);
   public
     { Public declarations }
     constructor Create(Owner: TComponent); override;
@@ -63,24 +63,13 @@ begin
   if nil = fFormData_WinGame.Cards_Mj then
   begin
     fFormData_WinGame.Cards_Mj := CheckOutCards_Mj;
-  end;
-  //ShuffleCards(PCards(fCards_Mj));
-  mmo1.lines.BeginUpdate;
-  try
-    mmo1.lines.Clear;
-    for i := Low(fFormData_WinGame.Cards_Mj.Card) to High(fFormData_WinGame.Cards_Mj.Card) do
-    begin
-      tmpStr := IntToStr(i) + ':' + IntToStr(fFormData_WinGame.Cards_Mj.Card[i].CardId) + #9;
-      tmpStr := tmpStr + '[' + GetMJCaption(fFormData_WinGame.Cards_Mj.Card[i].CardId) + ']';
-      tmpStr := tmpStr + '/' + #32#32#32 + IntToStr(fFormData_WinGame.Cards_Mj.Card[i].CardPos);
-      mmo1.lines.Add(tmpStr);
-    end;
-  finally
-    mmo1.lines.EndUpdate;
-  end;
+  end;                             
+  InitCards(PCards(fFormData_WinGame.Cards_Mj));
+  //ShuffleCards(PCards(fCards_Mj));   
+  LogCards(PCards(fFormData_WinGame.Cards_Mj), 2);
 end;
 
-procedure TfrmWinGame.LogCards(ACards: PCards); 
+procedure TfrmWinGame.LogCards(ACards: PCards; AMode: Integer); 
 var
   i: integer;
   tmpStr: string;
@@ -90,10 +79,21 @@ begin
     mmo1.lines.Clear;        
     for i := FirstCardIndex to FirstCardIndex + ACards.CardCount - 1 do
     begin
-      tmpStr := IntToStr(i) + ':' + IntToStr(ACards.Card[i].CardId) + #9;
-      tmpStr := tmpStr + '[' + GetPokerCaption(ACards.Card[i].CardId) + ']';
-      tmpStr := tmpStr + '/' + #32#32#32 + IntToStr(ACards.Card[i].CardPos);
-      mmo1.lines.Add(tmpStr);
+      tmpStr := '';
+      if 1 = AMode then
+      begin
+        tmpStr := IntToStr(i) + ':' + IntToStr(ACards.Card[i].CardId) + #9;
+        tmpStr := tmpStr + '[' + GetPokerCaption(ACards.Card[i].CardId) + ']';
+        tmpStr := tmpStr + '/' + #32#32#32 + IntToStr(ACards.Card[i].CardPos);
+      end;
+      if 2 = AMode then
+      begin
+        tmpStr := IntToStr(i) + ':' + IntToStr(ACards.Card[i].CardId) + #9;
+        tmpStr := tmpStr + '[' + GetMJCaption(ACards.Card[i].CardId) + ']';
+        tmpStr := tmpStr + '/' + #32#32#32 + IntToStr(ACards.Card[i].CardPos);
+      end;
+      if '' <> tmpStr then
+        mmo1.lines.Add(tmpStr);
     end;
   finally
     mmo1.lines.EndUpdate;
@@ -105,10 +105,11 @@ begin
   if nil = fFormData_WinGame.Cards_Poker then
   begin
     fFormData_WinGame.Cards_Poker := CheckOutCards_Poker2;
-  end;
-  ShuffleCards(PCards(fFormData_WinGame.Cards_Poker));
+  end;                
+  InitCards(PCards(fFormData_WinGame.Cards_Poker));
+  //ShuffleCards(PCards(fFormData_WinGame.Cards_Poker));
 
-  LogCards(PCards(fFormData_WinGame.Cards_Poker));
+  LogCards(PCards(fFormData_WinGame.Cards_Poker), 1);
 end;
 
 procedure TfrmWinGame.btnDDZ1Click(Sender: TObject);
@@ -126,7 +127,7 @@ begin
     fFormData_WinGame.DDZRoundSession.Cards_Poker := CheckOutCards_Poker1;
     InitCards(PCards(fFormData_WinGame.DDZRoundSession.Cards_Poker));
     ShuffleCards(PCards(fFormData_WinGame.DDZRoundSession.Cards_Poker));
-    LogCards(PCards(fFormData_WinGame.DDZRoundSession.Cards_Poker));
+    LogCards(PCards(fFormData_WinGame.DDZRoundSession.Cards_Poker), 1);
   end;
 end;
 
