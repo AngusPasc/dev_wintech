@@ -48,13 +48,16 @@ function ParseDateTime(ADateTimeString: AnsiString): TDateTime;
 var
   tmpParse: TDateTimeParseRecord;
 begin
-  FillChar(tmpParse, SizeOf(tmpParse), 0);
-  ParseDateTime(@tmpParse, ADateTimeString);
   Result := 0;
-  if tmpParse.IsHasDateStr then
-    Result := Result + tmpParse.Date;
-  if tmpParse.IsHasTimeStr then
-    Result := Result + tmpParse.Time;
+  if '' <> ADateTimeString then
+  begin
+    FillChar(tmpParse, SizeOf(tmpParse), 0);
+    ParseDateTime(@tmpParse, ADateTimeString);
+    if tmpParse.IsHasDateStr then
+      Result := Result + tmpParse.Date;
+    if tmpParse.IsHasTimeStr then
+      Result := Result + tmpParse.Time;
+  end;
 end;
 
 procedure ParseDateTime(ADateTimeParse: PDateTimeParseRecord; ADateTimeString: AnsiString);
