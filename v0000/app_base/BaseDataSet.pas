@@ -15,7 +15,7 @@ type
     function GetRecordCount: Integer; virtual;
     function GetRecordItem(AIndex: integer): Pointer; virtual;
   public
-    constructor Create(ADBType, ADataType, ADataSrcId: integer); virtual;
+    constructor Create(ADBType, ADataSrcId: integer); virtual;
     function FindRecordByKey(AKey: Integer): Pointer; virtual;
     function CheckOutKeyRecord(AKey: Integer): Pointer; virtual;
 
@@ -35,11 +35,11 @@ implementation
 
 { TBaseDataSetAccess }
 
-constructor TBaseDataSetAccess.Create(ADBType, ADataType, ADataSrcId: integer);
+constructor TBaseDataSetAccess.Create(ADBType, ADataSrcId: integer);
 begin
   FillChar(fBaseDataSetData, SizeOf(fBaseDataSetData), 0);
   fBaseDataSetData.DBType := ADBType;
-  fBaseDataSetData.DataType := ADataType;
+  fBaseDataSetData.DataType := DataTypeDefine;
   fBaseDataSetData.DataSrcId := ADataSrcId;
 end;
 
