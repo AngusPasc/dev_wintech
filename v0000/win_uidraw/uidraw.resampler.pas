@@ -3,7 +3,9 @@ unit uidraw.resampler;
 interface
 
 uses
-  ui.color, ui.bitmap, ui.space, BaseType;
+  //ui.color, ui.bitmap, ui.space, BaseType;
+
+  ui.texcolor, ui.texbitmap, ui.space, sys.datatype;
 
 type               
   TPixelAccessMode = (pamUnsafe, pamSafe, pamWrap, pamTransparentEdge);

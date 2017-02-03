@@ -3,7 +3,10 @@ unit uidraw_stretch;
 interface
 
 uses
-  ui.color, ui.bitmap, ui.space, uidraw.resampler;
+  ui.texcolor,
+  ui.texbitmap,
+  ui.space,
+  uidraw.resampler;
                    
   procedure Bitmap32Stretch(ADstBitmap32: PBitmap32; ADstRect: TUIRect; ASrc: PBitmap32; ASrcRect: TUIRect; AResampler: PBaseResampler);  
 
@@ -11,10 +14,11 @@ implementation
 
 uses
   Math,
-  BaseType,
+  sys.datatype,
   uidraw_stretch_nearest,
   uiwin.bitmap_draw,
-  win_data_move,
+  data.move.Windows,
+  //win_data_move,
   ui.bitmap_pixel;
 
 procedure Bitmap32Stretch(ADstBitmap32: PBitmap32; ADstRect: TUIRect; ASrc: PBitmap32; ASrcRect: TUIRect; AResampler: PBaseResampler);

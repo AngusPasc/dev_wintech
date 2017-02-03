@@ -3,7 +3,7 @@ unit uiwin.bitmap_draw;
 interface
 
 uses
-  ui.color, ui.bitmap, ui.space;
+  ui.texcolor, ui.texbitmap, ui.space;
                 
   procedure Bitmap32Line(ABitmap32: PBitmap32; X1, Y1, X2, Y2: Integer; Value: TColor32; L: Boolean = false);
   procedure Bitmap32HorzLine(ABitmap32: PBitmap32; X1, Y, X2: Integer; Value: TColor32);
@@ -23,11 +23,13 @@ uses
 implementation
 
 uses
-  BaseType,
-  uiwin.color,
-  ui.bitmap_pixel,
-  Define_WinColor,
-  win_data_move;
+  sys.datatype,
+  data.move.windows,
+  windef_color,
+  //uiwin.color,
+  ui.bitmap_pixel;
+  //Define_WinColor,
+  //win_data_move;
   
 procedure Bitmap32HorzLine(ABitmap32: PBitmap32; X1, Y, X2: Integer; Value: TColor32);
 begin
@@ -243,7 +245,7 @@ procedure Bitmap32Clear(ABitmap32: PBitmap32; AFillColor: TColor32);
 begin
   if Bitmap32Empty(ABitmap32) then
     Exit;
-  win_data_move.FillLongword(ABitmap32.Bits[0], ABitmap32.Width * ABitmap32.Height, AFillColor);
+  data.move.windows.FillLongword(ABitmap32.Bits[0], ABitmap32.Width * ABitmap32.Height, AFillColor);
 end;
 
 procedure Bitmap32Clear(ABitmap32: PBitmap32; ARect: TUIRect; AFillColor: TColor32);

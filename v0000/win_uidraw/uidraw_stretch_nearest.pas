@@ -3,7 +3,10 @@ unit uidraw_stretch_nearest;
 interface
 
 uses
-  ui.color, ui.bitmap, ui.space, uidraw.resampler;
+  ui.texcolor,
+  ui.texbitmap,
+  ui.space,
+  uidraw.resampler;
                                
   procedure StretchDraw_Nearest(ADst: PBitmap32; ADstRect: TUIRect; ASrc: PBitmap32; ASrcRect: TUIRect);
 
@@ -11,8 +14,9 @@ implementation
 
 uses
   Math,
-  BaseType,
-  win_data_move,
+  sys.datatype,
+  data.move.windows,
+  //win_data_move,
   uiwin.bitmap_draw,
   ui.bitmap_pixel;
 

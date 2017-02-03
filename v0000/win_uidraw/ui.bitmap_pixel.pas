@@ -3,8 +3,11 @@ unit ui.bitmap_pixel;
 interface
 
 uses
-  ui.color,
-  ui.bitmap;
+  //ui.color,
+  //ui.bitmap;
+                
+  ui.texcolor,
+  ui.texbitmap;
                 
   function Bitmap32GetPixelPtr(ABitmap32: PBitmap32; X, Y: Integer): PColor32; 
   function Bitmap32GetScanLine(ABitmap32: PBitmap32; Y: Integer): PColor32Array;
