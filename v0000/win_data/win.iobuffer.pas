@@ -67,9 +67,9 @@ type
     FirstExNode   : PIOBufferExNode;
     LastExNode    : PIOBufferExNode;
     ExNodeCount   : Integer;
-    Size          : DWORD;
-    TotalLength   : DWORD;
-    BufDataLength : DWORD;
+    Size          : LongWord;
+    TotalLength   : LongWord;
+    BufDataLength : LongWord;
     DataPointer   : Pointer;
   end;
 

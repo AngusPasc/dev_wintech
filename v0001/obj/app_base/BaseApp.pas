@@ -6,13 +6,18 @@ uses
   BasePath;
 
 const
-  RunStatus_Initialize    = 2;
-  RunStatus_Active        = 3;
-  RunStatus_Suspend       = 4; // 待定；悬而不决
+  RunStatus_AppCreated    = 1;
 
-  RunStatus_RequestShutdown = 7;
-  RunStatus_Finalize      = 8;  
-  RunStatus_Shutdown      = 9;
+  RunStatus_Init_Start    = 11;
+  RunStatus_Init_Succ     = 12;
+  RunStatus_Init_Fail     = 13;
+
+  RunStatus_Active        = 21;
+  RunStatus_Suspend       = 22; // 待定；悬而不决
+
+  RunStatus_RequestShutdown = 31;
+  RunStatus_Finalize      = 32;
+  RunStatus_Shutdown      = 33;
 
   RunMode_Normal          = 2;
   RunMode_Release         = 3;
@@ -132,7 +137,7 @@ begin
   GlobalBaseApp := Self;
   FillChar(fBaseAppData, SizeOf(fBaseAppData), 0);
   fBaseAppData.AppClassId := AppClassId; 
-  fBaseAppData.RunStatus := RunStatus_Active;
+  fBaseAppData.RunStatus := RunStatus_AppCreated;
   fBaseAppData.RunMode := RunMode_Normal;
 end;
 
@@ -149,6 +154,7 @@ end;
 function TBaseApp.Initialize: Boolean;
 begin
   Result := true;
+  fBaseAppData.RunStatus := RunStatus_Init_Start;
 end;
 
 procedure TBaseApp.Finalize;
@@ -162,6 +168,7 @@ end;
 
 procedure TBaseApp.Run;
 begin
+  fBaseAppData.RunStatus := RunStatus_Active;
 end;
 
 procedure TBaseApp.Terminate;
@@ -202,6 +209,7 @@ end;
 
 procedure TBaseAppAgent.Run;
 begin
+  fBaseAppAgentData.HostApp.RunStatus := RunStatus_Active;
 end;
 
 end.
