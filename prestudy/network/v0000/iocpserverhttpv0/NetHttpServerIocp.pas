@@ -37,6 +37,7 @@ uses
   Sysutils,
   BaseDataIO,
   HttpProtocol_Server,
+  HttpProtocol_WebSocket,
   win.cpu;
 
 function ThreadProc_IocpDataBufferWorkThread(AParam: PNetIOCPServerWorkThread): HResult; stdcall;
@@ -138,7 +139,8 @@ begin
               if 0 < tmpBytes then
               begin
                 // 处理进来的数据
-                DoHandleHttpClientDataIn(tmpIocpBuffer);
+                //HttpProtocol_WebSocket.DoHandleHttpClientDataIn(tmpIocpBuffer);
+                HttpProtocol_Server.DoHandleHttpClientDataIn(tmpIocpBuffer);
 
                 tmpIocpBuffer.IocpOperate := ioHandle;
                 tmpIocpBuffer.DataBufferPtr.BufferHead.DataLength := tmpBytes;
@@ -237,7 +239,10 @@ begin
   if INVALID_SOCKET <> AServer.BaseServer.ListenSocketHandle then
   begin
     if 0 = AServer.BaseServer.ListenPort then
-      AServer.BaseServer.ListenPort := 80;
+      AServer.BaseServer.ListenPort := 8080;
+
+    Writeln('Listen IP:' + '139.224.226.138');
+    Writeln('Listen Port:' + inttostr(AServer.BaseServer.ListenPort));
     AServer.BaseServer.IsActiveStatus := 1;
     FillChar(tmpAddr, SizeOf(tmpAddr), 0);
     tmpAddr.sin_family := AF_INET;
