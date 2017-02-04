@@ -87,6 +87,7 @@ type
     fBaseAppObjData: TBaseAppObjData;
   public
     constructor Create(App: TBaseApp); virtual;
+    property App: TBaseApp read fBaseAppObjData.App;
   end;
            
   TBaseAppPathData = record
