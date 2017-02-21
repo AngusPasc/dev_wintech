@@ -59,6 +59,8 @@ unit UtilsLog;
 
 interface
 
+{$IFDEF LOG}
+
 uses
   Windows, SysUtils;
 
@@ -109,8 +111,11 @@ var
   G_CurrentProcessId : Cardinal = 0;                   { 当前进程Id }
 //  G_MainThreadId     : Cardinal = 0;                       { 主线程Id }
 
+{$ENDIF}
+
 implementation
-               
+
+{$IFDEF LOG}               
 procedure SDLog(const ASourceFileName, AMsg: string; ALogFile: PLogFile = nil);                             // Log一般信息
 begin
   Log(ASourceFileName, AMsg, ALogFile);
@@ -617,5 +622,6 @@ initialization
 
 //finalization
 //  CloseLogFiles(@G_LogFile);
+{$ENDIF}
 
 end.
