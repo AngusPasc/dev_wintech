@@ -16,22 +16,22 @@ type
   {----------------------------------------}
   TALInt64List = class(TALBaseQuickSortList)
   public
-    function  GetItem(Index: Integer): Int64;
-    procedure SetItem(Index: Integer; const Item: Int64);
-    function  GetObject(Index: Integer): TObject;
-    procedure PutObject(Index: Integer; AObject: TObject);
+    function  GetItem(AIndex: Integer): Int64;
+    procedure SetItem(AIndex: Integer; const AItemKey: Int64);
+    function  GetObject(AIndex: Integer): TObject;
+    procedure PutObject(AIndex: Integer; AObject: TObject);
   public
     procedure Notify(Ptr: Pointer; Action: TListNotification); override;
-    procedure InsertItem(Index: Integer; const item: Int64; AObject: TObject);
+    procedure InsertItem(AIndex: Integer; const AitemKey: Int64; AObject: TObject);
     function  CompareItems(const Index1, Index2: Integer): Integer; override;
   public
-    function  IndexOf(Item: Int64): Integer;
+    function  IndexOf(AItemKey: Int64): Integer;
     function  IndexOfObject(AObject: TObject): Integer;
-    function  Add(const Item: Int64): Integer;
-    Function  AddObject(const Item: Int64; AObject: TObject): Integer;
-    function  Find(item: Int64; var Index: Integer): Boolean;
-    procedure Insert(Index: Integer; const item: Int64);
-    procedure InsertObject(Index: Integer; const item: Int64; AObject: TObject);
+    function  Add(const AItemKey: Int64): Integer;
+    Function  AddObject(const AItemKey: Int64; AObject: TObject): Integer;
+    function  Find(AitemKey: Int64; var AIndex: Integer): Boolean;
+    procedure Insert(AIndex: Integer; const AitemKey: Int64);
+    procedure InsertObject(AIndex: Integer; const AitemKey: Int64; AObject: TObject);
     property  Items[Index: Integer]: Int64 read GetItem write SetItem; default;
     property  Objects[Index: Integer]: TObject read GetObject write PutObject;
   end;
@@ -40,39 +40,39 @@ implementation
 
 
 {****************************************************}
-function TALInt64List.Add(const Item: Int64): Integer;
+function TALInt64List.Add(const AItemKey: Int64): Integer;
 begin
-  Result := AddObject(Item, nil);
+  Result := AddObject(AItemKey, nil);
 end;
 
 {****************************************************************************}
-function TALInt64List.AddObject(const Item: Int64; AObject: TObject): Integer;
+function TALInt64List.AddObject(const AItemKey: Int64; AObject: TObject): Integer;
 begin
   if not Sorted then
   begin
     Result := FCount
-  end else if Find(Item, Result) then
+  end else if Find(AItemKey, Result) then
   begin
     case Duplicates of
       lstdupIgnore: Exit;
       lstdupError: Error(@SALDuplicateItem, 0);
     end;
   end;
-  InsertItem(Result, Item, AObject);
+  InsertItem(Result, AItemKey, AObject);
 end;
 
 {*************************************************************************************}
-procedure TALInt64List.InsertItem(Index: Integer; const item: Int64; AObject: TObject);
+procedure TALInt64List.InsertItem(AIndex: Integer; const AitemKey: Int64; AObject: TObject);
 var
-  tmpInt64Item: PALInt64ListItem;
+  tmpListItem: PALInt64ListItem;
 begin
-  New(tmpInt64Item);
-  tmpInt64Item^.FInt64 := item;
-  tmpInt64Item^.FObject := AObject;
+  New(tmpListItem);
+  tmpListItem^.FInt64 := AitemKey;
+  tmpListItem^.FObject := AObject;
   try
-    inherited InsertItem(index, tmpInt64Item);
+    inherited InsertItem(Aindex, tmpListItem);
   except
-    Dispose(tmpInt64Item);
+    Dispose(tmpListItem);
     raise;
   end;
 end;
@@ -92,7 +92,7 @@ begin
 end;
 
 {*******************************************************************}
-function TALInt64List.Find(item: Int64; var Index: Integer): Boolean;
+function TALInt64List.Find(AitemKey: Int64; var AIndex: Integer): Boolean;
 var L, H, I, C: Integer;
 
   {--------------------------------------------}
@@ -107,9 +107,10 @@ begin
   Result := False;
   L := 0;
   H := FCount - 1;
-  while L <= H do begin
+  while L <= H do
+  begin
     I := (L + H) shr 1;
-    C := _CompareInt64(GetItem(I),item);
+    C := _CompareInt64(GetItem(I), AitemKey);
     if C < 0 then
     begin
       L := I + 1
@@ -124,22 +125,22 @@ begin
       end;
     end;
   end;
-  Index := L;
+  AIndex := L;
 end;
 
 {***************************************************}
-function TALInt64List.GetItem(Index: Integer): Int64;
+function TALInt64List.GetItem(AIndex: Integer): Int64;
 begin
-  Result := PALInt64ListItem(Get(index))^.FInt64
+  Result := PALInt64ListItem(Get(Aindex))^.FInt64
 end;
 
 {**************************************************}
-function TALInt64List.IndexOf(Item: Int64): Integer;
+function TALInt64List.IndexOf(AItemKey: Int64): Integer;
 begin
   if not Sorted then
   Begin
     Result := 0;
-    while (Result < FCount) and (GetItem(result) <> Item) do
+    while (Result < FCount) and (GetItem(result) <> AItemKey) do
     begin
       Inc(Result);
     end;
@@ -148,30 +149,30 @@ begin
       Result := -1;
     end;
   end else
-    if not Find(Item, Result) then
+    if not Find(AItemKey, Result) then
     begin
       Result := -1;
     end;
 end;
 
 {***************************************************************}
-procedure TALInt64List.Insert(Index: Integer; const Item: Int64);
+procedure TALInt64List.Insert(AIndex: Integer; const AItemKey: Int64);
 begin
-  InsertObject(Index, index, nil);
+  InsertObject(AIndex, AItemKey, nil);
 end;
 
 {***************************************************************************************}
-procedure TALInt64List.InsertObject(Index: Integer; const item: Int64; AObject: TObject);
+procedure TALInt64List.InsertObject(AIndex: Integer; const AitemKey: Int64; AObject: TObject);
 Var
-  tmpInt64Item: PALInt64ListItem;
+  tmpListItem: PALInt64ListItem;
 begin
-  New(tmpInt64Item);
-  tmpInt64Item^.FInt64 := item;
-  tmpInt64Item^.FObject := AObject;
+  New(tmpListItem);
+  tmpListItem^.FInt64 := AitemKey;
+  tmpListItem^.FObject := AObject;
   try
-    inherited insert(index, tmpInt64Item);
+    inherited insert(Aindex, tmpListItem);
   except
-    Dispose(tmpInt64Item);
+    Dispose(tmpListItem);
     raise;
   end;
 end;
@@ -185,26 +186,27 @@ begin
 end;
 
 {****************************************************************}
-procedure TALInt64List.SetItem(Index: Integer; const Item: Int64);
+procedure TALInt64List.SetItem(AIndex: Integer; const AItemKey: Int64);
 var
-  tmpInt64Item: PALInt64ListItem;
+  tmpListItem: PALInt64ListItem;
 begin
-  New(tmpInt64Item);
-  tmpInt64Item^.FInt64 := item;
-  tmpInt64Item^.FObject := nil;
+  New(tmpListItem);
+  tmpListItem^.FInt64 := AitemKey;
+  tmpListItem^.FObject := nil;
   try
-    Put(Index, tmpInt64Item);
+    Put(AIndex, tmpListItem);
   except
-    Dispose(tmpInt64Item);
+    Dispose(tmpListItem);
     raise;
   end;
 end;
 
 {*******************************************************}
-function TALInt64List.GetObject(Index: Integer): TObject;
+function TALInt64List.GetObject(AIndex: Integer): TObject;
 begin
-  if (Index < 0) or (Index >= FCount) then Error(@SALListIndexError, Index);
-  Result :=  PALInt64ListItem(Get(index))^.FObject;
+  if (AIndex < 0) or (AIndex >= FCount) then
+    Error(@SALListIndexError, AIndex);
+  Result :=  PALInt64ListItem(Get(Aindex))^.FObject;
 end;
 
 {*************************************************************}
@@ -221,13 +223,13 @@ begin
 end;
 
 {*****************************************************************}
-procedure TALInt64List.PutObject(Index: Integer; AObject: TObject);
+procedure TALInt64List.PutObject(AIndex: Integer; AObject: TObject);
 begin
-  if (Index < 0) or (Index >= FCount) then
+  if (AIndex < 0) or (AIndex >= FCount) then
   begin
-    Error(@SALListIndexError, Index);
+    Error(@SALListIndexError, AIndex);
   end;
-  PALInt64ListItem(Get(index))^.FObject := AObject;
+  PALInt64ListItem(Get(Aindex))^.FObject := AObject;
 end;
 
 end.

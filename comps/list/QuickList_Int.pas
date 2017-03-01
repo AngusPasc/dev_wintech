@@ -16,22 +16,22 @@ type
   {------------------------------------------}
   TALIntegerList = class(TALBaseQuickSortList)
   public
-    function  GetItem(Index: Integer): Integer;
-    procedure SetItem(Index: Integer; const Item: Integer);
-    function  GetObject(Index: Integer): TObject;
-    procedure PutObject(Index: Integer; AObject: TObject);
+    function  GetItem(AIndex: Integer): Integer;
+    procedure SetItem(AIndex: Integer; const AItemKey: Integer);
+    function  GetObject(AIndex: Integer): TObject;
+    procedure PutObject(AIndex: Integer; AObject: TObject);
   public
     procedure Notify(Ptr: Pointer; Action: TListNotification); override;
-    procedure InsertItem(Index: Integer; const item: integer; AObject: TObject);
+    procedure InsertItem(AIndex: Integer; const AitemKey: integer; AObject: TObject);
     function  CompareItems(const Index1, Index2: Integer): Integer; override;
   public
-    function  IndexOf(Item: Integer): Integer;
+    function  IndexOf(AItemKey: Integer): Integer;
     function  IndexOfObject(AObject: TObject): Integer;
-    function  Add(const Item: integer): Integer;
-    Function  AddObject(const Item: integer; AObject: TObject): Integer;
-    function  Find(item: Integer; var Index: Integer): Boolean;
-    procedure Insert(Index: Integer; const item: integer);
-    procedure InsertObject(Index: Integer; const item: integer; AObject: TObject);
+    function  Add(const AItemKey: integer): Integer;
+    Function  AddObject(const AItemKey: integer; AObject: TObject): Integer;
+    function  Find(AItemKey: Integer; var AIndex: Integer): Boolean;
+    procedure Insert(AIndex: Integer; const AitemKey: integer);
+    procedure InsertObject(AIndex: Integer; const AitemKey: integer; AObject: TObject);
     property  Items[Index: Integer]: Integer read GetItem write SetItem; default;
     property  Objects[Index: Integer]: TObject read GetObject write PutObject;
   end;
@@ -39,34 +39,36 @@ type
 implementation
 
 {********************************************************}
-function TALIntegerList.Add(const Item: integer): Integer;
+function TALIntegerList.Add(const AItemKey: integer): Integer;
 begin
-  Result := AddObject(Item, nil);
+  Result := AddObject(AItemKey, nil);
 end;
 
 {********************************************************************************}
-function TALIntegerList.AddObject(const Item: integer; AObject: TObject): Integer;
+function TALIntegerList.AddObject(const AItemKey: integer; AObject: TObject): Integer;
 begin
-  if not Sorted then Result := FCount
-  else if Find(Item, Result) then
+  if not Sorted then
+    Result := FCount
+  else if Find(AItemKey, Result) then
     case Duplicates of
       lstDupIgnore: Exit;
       lstDupError: Error(@SALDuplicateItem, 0);
     end;
-  InsertItem(Result, Item, AObject);
+  InsertItem(Result, AItemKey, AObject);
 end;
 
 {*****************************************************************************************}
-procedure TALIntegerList.InsertItem(Index: Integer; const item: integer; AObject: TObject);
-Var aPALIntegerListItem: PALIntegerListItem;
+procedure TALIntegerList.InsertItem(AIndex: Integer; const AitemKey: integer; AObject: TObject);
+var
+  tmpListItem: PALIntegerListItem;
 begin
-  New(aPALIntegerListItem);
-  aPALIntegerListItem^.FInteger := item;
-  aPALIntegerListItem^.FObject := AObject;
+  New(tmpListItem);
+  tmpListItem^.FInteger := AitemKey;
+  tmpListItem^.FObject := AObject;
   try
-    inherited InsertItem(index,aPALIntegerListItem);
+    inherited InsertItem(Aindex, tmpListItem);
   except
-    Dispose(aPALIntegerListItem);
+    Dispose(tmpListItem);
     raise;
   end;
 end;
@@ -78,62 +80,79 @@ begin
 end;
 
 {***********************************************************************}
-function TALIntegerList.Find(item: Integer; var Index: Integer): Boolean;
-var L, H, I, C: Integer;
+function TALIntegerList.Find(AItemKey: Integer; var AIndex: Integer): Boolean;
+var
+  L: Integer;
+  H: Integer;
+  I: Integer;
+  C: double;
 begin
   Result := False;
   L := 0;
   H := FCount - 1;
-  while L <= H do begin
+  while L <= H do
+  begin
     I := (L + H) shr 1;
-    C := GetItem(I) - item;
-    if C < 0 then L := I + 1
-    else begin
+    C := GetItem(I) - AItemkey;
+    if C < 0 then
+    begin
+      L := I + 1
+    end else
+    begin
       H := I - 1;
-      if C = 0 then begin
+      if C = 0 then
+      begin
         Result := True;
         if Duplicates <> lstDupAccept then
           L := I;
       end;
     end;
   end;
-  Index := L;
+  AIndex := L;
 end;
 
 {*******************************************************}
-function TALIntegerList.GetItem(Index: Integer): Integer;
+function TALIntegerList.GetItem(AIndex: Integer): Integer;
 begin
-  Result := PALIntegerListItem(Get(index))^.FInteger
+  Result := PALIntegerListItem(Get(Aindex))^.FInteger
 end;
 
 {******************************************************}
-function TALIntegerList.IndexOf(Item: Integer): Integer;
+function TALIntegerList.IndexOf(AItemKey: Integer): Integer;
 begin
-  if not Sorted then Begin
+  if not Sorted then
+  begin
     Result := 0;
-    while (Result < FCount) and (GetItem(result) <> Item) do Inc(Result);
-    if Result = FCount then Result := -1;
-  end
-  else if not Find(Item, Result) then Result := -1;
+    while (Result < FCount) and (GetItem(result) <> AItemKey) do
+    begin
+      Inc(Result);
+    end;
+    if Result = FCount then
+    begin
+      Result := -1;
+    end;
+  end else if not Find(AItemKey, Result) then
+    Result := -1;
 end;
 
 {*******************************************************************}
-procedure TALIntegerList.Insert(Index: Integer; const Item: Integer);
+procedure TALIntegerList.Insert(AIndex: Integer; const AItemKey: Integer);
 begin
-  InsertObject(Index, index, nil);
+  InsertObject(AIndex, AItemKey, nil);
 end;
 
 {*******************************************************************************************}
-procedure TALIntegerList.InsertObject(Index: Integer; const item: integer; AObject: TObject);
-Var aPALIntegerListItem: PALIntegerListItem;
+procedure TALIntegerList.InsertObject(AIndex: Integer; const AitemKey: integer; AObject: TObject);
+var
+  tmpListItem: PALIntegerListItem;
 begin
-  New(aPALIntegerListItem);
-  aPALIntegerListItem^.FInteger := item;
-  aPALIntegerListItem^.FObject := AObject;
+  New(tmpListItem);
+  tmpListItem^.FInteger := AitemKey;
+  tmpListItem^.FObject := AObject;
   try
-    inherited insert(index,aPALIntegerListItem);
+    inherited insert(Aindex, tmpListItem);
   except
-    Dispose(aPALIntegerListItem);
+    Dispose(tmpListItem);
     raise;
   end;
 end;
@@ -147,40 +166,50 @@ begin
 end;
 
 {********************************************************************}
-procedure TALIntegerList.SetItem(Index: Integer; const Item: Integer);
-Var aPALIntegerListItem: PALIntegerListItem;
+procedure TALIntegerList.SetItem(AIndex: Integer; const AItemKey: Integer);
+var
+  tmpListItem: PALIntegerListItem;
 begin
-  New(aPALIntegerListItem);
-  aPALIntegerListItem^.FInteger := item;
-  aPALIntegerListItem^.FObject := nil;
+  New(tmpListItem);
+  tmpListItem^.FInteger := AitemKey;
+  tmpListItem^.FObject := nil;
   Try
-    Put(Index, aPALIntegerListItem);
+    Put(AIndex, tmpListItem);
   except
-    Dispose(aPALIntegerListItem);
+    Dispose(tmpListItem);
     raise;
   end;
 end;
 
 {*********************************************************}
-function TALIntegerList.GetObject(Index: Integer): TObject;
+function TALIntegerList.GetObject(AIndex: Integer): TObject;
 begin
-  if (Index < 0) or (Index >= FCount) then Error(@SALListIndexError, Index);
-  Result :=  PALIntegerListItem(Get(index))^.FObject;
+  if (AIndex < 0) or (AIndex >= FCount) then
+    Error(@SALListIndexError, AIndex);
+  Result :=  PALIntegerListItem(Get(Aindex))^.FObject;
 end;
 
 {***************************************************************}
 function TALIntegerList.IndexOfObject(AObject: TObject): Integer;
 begin
-  for Result := 0 to Count - 1 do
-    if GetObject(Result) = AObject then Exit;
+  for Result := 0 to Count - 1 do              
+  begin
+    if GetObject(Result) = AObject then
+    begin
+      Exit;
+    end;
+  end;
   Result := -1;
 end;
 
 {*******************************************************************}
-procedure TALIntegerList.PutObject(Index: Integer; AObject: TObject);
+procedure TALIntegerList.PutObject(AIndex: Integer; AObject: TObject);
 begin
-  if (Index < 0) or (Index >= FCount) then Error(@SALListIndexError, Index);
-  PALIntegerListItem(Get(index))^.FObject := AObject;
+  if (AIndex < 0) or (AIndex >= FCount) then
+  begin
+    Error(@SALListIndexError, AIndex);
+  end;
+  PALIntegerListItem(Get(Aindex))^.FObject := AObject;
 end;
 
 end.

@@ -16,62 +16,62 @@ type
   {------------------------------------------}
   TALDoubleList = class(TALBaseQuickSortList)
   public
-    function  GetItem(Index: Integer): double;
-    procedure SetItem(Index: Integer; const Item: double);
-    function  GetObject(Index: Integer): TObject;
-    procedure PutObject(Index: Integer; AObject: TObject);
+    function  GetItem(AIndex: Integer): double;
+    procedure SetItem(AIndex: Integer; const AItemkey: double);
+    function  GetObject(AIndex: Integer): TObject;
+    procedure PutObject(AIndex: Integer; AObject: TObject);
   public
     procedure Notify(Ptr: Pointer; Action: TListNotification); override;
-    procedure InsertItem(Index: Integer; const item: double; AObject: TObject);
+    procedure InsertItem(AIndex: Integer; const item: double; AObject: TObject);
     function  CompareItems(const Index1, Index2: Integer): Integer; override;
   public
-    function  IndexOf(Item: double): Integer;
+    function  IndexOf(AItemKey: double): Integer;
     function  IndexOfObject(AObject: TObject): Integer;
-    function  Add(const Item: double): Integer;
-    Function  AddObject(const Item: double; AObject: TObject): Integer;
-    function  Find(item: double; var Index: Integer): Boolean;
-    procedure Insert(Index: Integer; const item: double);
-    procedure InsertObject(Index: Integer; const item: double; AObject: TObject);
+    function  Add(const AItemKey: double): Integer;
+    Function  AddObject(const AItemKey: double; AObject: TObject): Integer;
+    function  Find(AItemKey: double; var AIndex: Integer): Boolean;
+    procedure Insert(AIndex: Integer; const AitemKey: double);
+    procedure InsertObject(AIndex: Integer; const AitemKey: double; AObject: TObject);
     property  Items[Index: Integer]: double read GetItem write SetItem; default;
     property  Objects[Index: Integer]: TObject read GetObject write PutObject;
   end;
 
 implementation
-
+                                                                   
 {********************************************************}
-function TALDoubleList.Add(const Item: double): Integer;
+function TALDoubleList.Add(const AItemKey: double): Integer;
 begin
-  Result := AddObject(Item, nil);
+  Result := AddObject(AItemKey, nil);
 end;
 
 {********************************************************************************}
-function TALDoubleList.AddObject(const Item: double; AObject: TObject): Integer;
+function TALDoubleList.AddObject(const AItemKey: double; AObject: TObject): Integer;
 begin
   if not Sorted then
   begin
     Result := FCount
-  end else if Find(Item, Result) then
+  end else if Find(AItemKey, Result) then
   begin
     case Duplicates of
       lstDupIgnore: Exit;
       lstDupError: Error(@SALDuplicateItem, 0);
     end;
   end;
-  InsertItem(Result, Item, AObject);
+  InsertItem(Result, AItemKey, AObject);
 end;
 
 {*****************************************************************************************}
-procedure TALDoubleList.InsertItem(Index: Integer; const item: double; AObject: TObject);
+procedure TALDoubleList.InsertItem(AIndex: Integer; const item: double; AObject: TObject);
 Var
-  tmpDoubleListItem: PALDoubleListItem;
+  tmpListItem: PALDoubleListItem;
 begin
-  New(tmpDoubleListItem);
-  tmpDoubleListItem^.FDouble := item;
-  tmpDoubleListItem^.FObject := AObject;
+  New(tmpListItem);
+  tmpListItem^.FDouble := item;
+  tmpListItem^.FObject := AObject;
   try
-    inherited InsertItem(index, tmpDoubleListItem);
+    inherited InsertItem(Aindex, tmpListItem);
   except
-    Dispose(tmpDoubleListItem);
+    Dispose(tmpListItem);
     raise;
   end;
 end;
@@ -96,7 +96,7 @@ begin
 end;
 
 {***********************************************************************}
-function TALDoubleList.Find(item: Double; var Index: Integer): Boolean;
+function TALDoubleList.Find(AItemKey: Double; var AIndex: Integer): Boolean;
 var
   L: Integer;
   H: Integer;
@@ -109,7 +109,7 @@ begin
   while L <= H do
   begin
     I := (L + H) shr 1;
-    C := GetItem(I) - item;
+    C := GetItem(I) - AItemKey;
     if C < 0 then
     begin
       L := I + 1
@@ -124,22 +124,22 @@ begin
       end;
     end;
   end;
-  Index := L;
+  AIndex := L;
 end;
 
 {*******************************************************}
-function TALDoubleList.GetItem(Index: Integer): double;
+function TALDoubleList.GetItem(AIndex: Integer): double;
 begin
-  Result := PALDoubleListItem(Get(index))^.FDouble
+  Result := PALDoubleListItem(Get(AIndex))^.FDouble
 end;
 
 {******************************************************}
-function TALDoubleList.IndexOf(Item: double): Integer;
+function TALDoubleList.IndexOf(AItemKey: double): Integer;
 begin
   if not Sorted then
   Begin
     Result := 0;
-    while (Result < FCount) and (GetItem(result) <> Item) do
+    while (Result < FCount) and (GetItem(result) <> AItemKey) do
     begin
       Inc(Result);
     end;
@@ -149,29 +149,29 @@ begin
     end;
   end else
   begin
-    if not Find(Item, Result) then
+    if not Find(AItemKey, Result) then
       Result := -1;
   end;
 end;
 
 {*******************************************************************}
-procedure TALDoubleList.Insert(Index: Integer; const Item: double);
+procedure TALDoubleList.Insert(AIndex: Integer; const AItemKey: double);
 begin
-  InsertObject(Index, index, nil);
+  InsertObject(AIndex, AItemKey, nil);
 end;
 
 {*******************************************************************************************}
-procedure TALDoubleList.InsertObject(Index: Integer; const item: double; AObject: TObject);
+procedure TALDoubleList.InsertObject(AIndex: Integer; const AitemKey: double; AObject: TObject);
 Var
-  tmpDoubleListItem: PALDoubleListItem;
+  tmpListItem: PALDoubleListItem;
 begin
-  New(tmpDoubleListItem);
-  tmpDoubleListItem^.FDouble := item;
-  tmpDoubleListItem^.FObject := AObject;
+  New(tmpListItem);
+  tmpListItem^.FDouble := AitemKey;
+  tmpListItem^.FObject := AObject;
   try
-    inherited insert(index, tmpDoubleListItem);
+    inherited insert(Aindex, tmpListItem);
   except
-    Dispose(tmpDoubleListItem);
+    Dispose(tmpListItem);
     raise;
   end;
 end;
@@ -185,26 +185,27 @@ begin
 end;
 
 {********************************************************************}
-procedure TALDoubleList.SetItem(Index: Integer; const Item: double);
+procedure TALDoubleList.SetItem(AIndex: Integer; const AItemkey: double);
 Var
-  tmpDoubleListItem: PALDoubleListItem;
+  tmpListItem: PALDoubleListItem;
 begin
-  New(tmpDoubleListItem);
-  tmpDoubleListItem^.FDouble := item;
-  tmpDoubleListItem^.FObject := nil;
+  New(tmpListItem);
+  tmpListItem^.FDouble := Aitemkey;
+  tmpListItem^.FObject := nil;
   Try
-    Put(Index, tmpDoubleListItem);
+    Put(AIndex, tmpListItem);
   except
-    Dispose(tmpDoubleListItem);
+    Dispose(tmpListItem);
     raise;
   end;
 end;
 
 {*********************************************************}
-function TALDoubleList.GetObject(Index: Integer): TObject;
+function TALDoubleList.GetObject(AIndex: Integer): TObject;
 begin
-  if (Index < 0) or (Index >= FCount) then Error(@SALListIndexError, Index);
-  Result :=  PALDoubleListItem(Get(index))^.FObject;
+  if (AIndex < 0) or (AIndex >= FCount) then
+    Error(@SALListIndexError, AIndex);
+  Result :=  PALDoubleListItem(Get(Aindex))^.FObject;
 end;
 
 {***************************************************************}
@@ -221,13 +222,13 @@ begin
 end;
 
 {*******************************************************************}
-procedure TALDoubleList.PutObject(Index: Integer; AObject: TObject);
+procedure TALDoubleList.PutObject(AIndex: Integer; AObject: TObject);
 begin
-  if (Index < 0) or (Index >= FCount) then
+  if (AIndex < 0) or (AIndex >= FCount) then
   begin
-    Error(@SALListIndexError, Index);
+    Error(@SALListIndexError, AIndex);
   end;
-  PALDoubleListItem(Get(index))^.FObject := AObject;
+  PALDoubleListItem(Get(Aindex))^.FObject := AObject;
 end;
 
 end.
