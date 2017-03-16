@@ -17,13 +17,16 @@ type
   PBaseWinAppData = ^TBaseWinAppData;
   TBaseWinAppData = record
     WinAppRecord  : TWinAppRecord;
+    ConsoleMode   : Byte;
     AppPath       : TBaseWinAppPath;
   end;
 
   TBaseWinApp = class(TBaseApp)
   protected
     fBaseWinAppData: TBaseWinAppData;  
-    function GetBaseWinAppData: PBaseWinAppData;
+    function GetBaseWinAppData: PBaseWinAppData;      
+    function GetIsConsoleMode: Boolean;
+    procedure SetIsConsoleMode(const Value: Boolean);
   public
     constructor Create(AppClassId: AnsiString); override;
     procedure RunAppMsgLoop;
@@ -33,11 +36,13 @@ type
     procedure Terminate; override;
     property BaseWinAppData: PBaseWinAppData read GetBaseWinAppData;
     property AppWindow: HWND read fBaseWinAppData.WinAppRecord.AppCmdWnd write fBaseWinAppData.WinAppRecord.AppCmdWnd;
+    property IsConsoleMode: Boolean read GetIsConsoleMode write SetIsConsoleMode; 
   end;
 
   TBaseWinAppAgent = class(TBaseAppAgent)
   protected
   public
+    //property WinApp: TBaseWinApp read GetWinApp;
   end;
   
 var
@@ -99,9 +104,25 @@ begin
     DispatchMessage(fBaseWinAppData.WinAppRecord.AppMsg);
   end;
 end;
+                 
+function TBaseWinApp.GetIsConsoleMode: Boolean;
+begin
+  Result := fBaseWinAppData.ConsoleMode = 1;
+end;
+
+procedure TBaseWinApp.SetIsConsoleMode(const Value: Boolean);
+begin
+  if Value then
+  begin
+    fBaseWinAppData.ConsoleMode := 1;
+  end else
+  begin
+    fBaseWinAppData.ConsoleMode := 2;
+  end;
+end;
 
 function TBaseWinApp.CheckSingleInstance(AppMutexName: AnsiString): Boolean;
-begin                                           
+begin
   if AppMutexName = '' then
     AppMutexName := ExtractFileName(ParamStr(0));
   fBaseWinAppData.WinAppRecord.AppMutexHandle := CreateMutexA(nil, False, PAnsiChar(AppMutexName));

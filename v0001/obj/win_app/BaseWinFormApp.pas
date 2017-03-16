@@ -24,6 +24,15 @@ type
   end;
                
   TWinFormAppClass = class of TBaseWinFormApp;
+         
+  TBaseWinFormAppAgent = class(TBaseWinAppAgent)
+  protected
+  public          
+    constructor Create(AHostApp: TBaseApp); override;
+    function Initialize: Boolean; override;
+    procedure Finalize; override;
+    procedure Run; override;    
+  end;
   
 var
   GlobalBaseWinFormApp: TBaseWinFormApp = nil;
@@ -83,5 +92,31 @@ procedure TBaseWinFormApp.Run;
 begin
   Application.Run;
 end;
+
+constructor TBaseWinFormAppAgent.Create(AHostApp: TBaseApp);
+begin
+  inherited Create(AHostApp);
+end;
+    
+function TBaseWinFormAppAgent.Initialize: Boolean; 
+begin
+  Result := inherited Initialize;
+  if Result then
+  begin
+    Application.Initialize;
+    Application.MainFormOnTaskBar := true;
+  end;
+end;
+
+procedure TBaseWinFormAppAgent.Finalize; 
+begin
+  inherited;
+end;
+
+procedure TBaseWinFormAppAgent.Run; 
+begin
+  inherited;
+  Application.Run;
+end;    
 
 end.
