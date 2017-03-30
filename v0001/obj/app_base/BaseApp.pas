@@ -32,6 +32,7 @@ const
 type                    
   TBaseAppPath = class;
   TBaseAppAgent = class;
+  TBaseAppUI = class;
   
   PBaseAppData      = ^TBaseAppData;
   TBaseAppData      = packed record
@@ -39,6 +40,7 @@ type
     RunMode         : Word;
     LogMode         : Word;
     AppAgent        : TBaseAppAgent;
+    UI              : TBaseAppUI;
     AppClassId      : AnsiString;
   end;
 
@@ -60,6 +62,7 @@ type
     property RunMode: Word read fBaseAppData.RunMode write fBaseAppData.RunMode;
     property LogMode: Word read fBaseAppData.LogMode write fBaseAppData.LogMode;
     property Path: TBaseAppPath read GetPath;
+    property UI: TBaseAppUI read fBaseAppData.UI; 
     property AppAgent: TBaseAppAgent read fBaseAppData.AppAgent write fBaseAppData.AppAgent;
   end;
 
@@ -76,6 +79,11 @@ type
     procedure Finalize; virtual;
     procedure Run; virtual;    
     property HostApp: TBaseApp read fBaseAppAgentData.HostApp;
+  end;
+
+  TBaseAppUI = class
+  protected
+  public
   end;
 
   TBaseAppObjData = record

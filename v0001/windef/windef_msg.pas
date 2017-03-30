@@ -13,8 +13,11 @@ const
   WM_AppRequestEnd  = WM_CommonAppBase + 11;
   WM_AppNotifyEnd   = WM_CommonAppBase + 12;
 
-  WM_AppNotifyShutdownMachine = WM_CommonAppBase + 16;
-  WM_AppNotifyRestartMachine  = WM_CommonAppBase + 17;
+  WM_AppNotifyOS              = WM_CommonAppBase + 16;
+
+  AppNotify_ShutDown          = 101;
+  AppNotify_Restart           = 102;
+  AppNotify_Logout            = 103;
 
   // Client --> Server Host                                   
   WM_RequestHostCommandWnd    = WM_CommonAppBase + 21;
